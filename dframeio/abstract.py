@@ -8,7 +8,7 @@ from dframeio.imports import pd
 class Reader:
     """Interface for reading dataframes from different storage drivers"""
 
-    @abstractmethod()
+    @abstractmethod
     def read_to_pandas(
         self,
         source: str,
@@ -20,7 +20,7 @@ class Reader:
     ):
         raise NotImplementedError()
 
-    @abstractmethod()
+    @abstractmethod
     def read_to_dict(
         self,
         source: str,
@@ -38,12 +38,12 @@ class Writer:
 
     @abstractmethod
     def write_replace(
-        self, target: str, dataframe: Union[pd.Dataframe, Dict[str, List[Any]]]
+        self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List[Any]]]
     ):
         raise NotImplementedError()
 
     @abstractmethod
     def write_append(
-        self, target: str, dataframe: Union[pd.Dataframe, Dict[str, List[Any]]]
+        self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List[Any]]]
     ):
         raise NotImplementedError()
