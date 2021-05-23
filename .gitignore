@@ -73,9 +73,13 @@ venv.bak/
 .spyproject
 .ropeproject
 .idea
+.vscode/
 
 # mkdocs documentation
 /site
 
 # mypy
 .mypy_cache/
+
+# mkdocs build dir
+site/
