@@ -41,7 +41,7 @@ jobs:
 
       - name: test with tox
         run:
-          tox
+          tox -e py39
 
       - name: list files
         run: ls -l .
