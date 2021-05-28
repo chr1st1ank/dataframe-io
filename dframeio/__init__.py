@@ -7,9 +7,8 @@ __version__ = "0.1.0"
 backends = []
 
 try:
-    import dframeio.parquet
-
-    backends.append(dframeio.parquet.ParquetBackend)
+    from dframeio.parquet import ParquetBackend
+    backends.append(ParquetBackend)
 except ModuleNotFoundError as e:
     if e.name == "pyarrow":
         pass

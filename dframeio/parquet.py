@@ -1,5 +1,5 @@
-import pathlib
-from typing import List
+from pathlib import Path
+from typing import List, Dict
 
 from . import abstract
 
@@ -24,18 +24,43 @@ class ParquetBackend(abstract.AbstractDataFrameReader):
     def read_to_pandas(
         self,
         source: str,
-        columns: List[str],
-        row_filter: str,
+        columns: List[str] = None,
+        row_filter: str = None,
         drop_duplicates: bool = False,
         limit: int = -1,
         sample: int = -1,
-    ):
+    ) -> pd.DataFrame:
         """Read a parquet dataset from disk into a pandas dataframe"""
-        full_path = pathlib.Path(self.base_path) / source
-        if self.base_path not in full_path.parents:
+        full_path = Path(self.base_path) / source
+        if Path(self.base_path) not in full_path.parents:
             raise ValueError(
                 f"The given source path {source} is not in base_path {self.base_path}!"
             )
-        return pq.read_table(
+        df = pq.read_table(
             str(full_path), columns=columns, use_threads=True, use_pandas_metadata=True
         ).to_pandas()
+        if row_filter:
+            return df.query(row_filter)
+        return df
+
+    def read_to_dict(
+        self,
+        source: str,
+        columns: List[str] = None,
+        row_filter: str = None,
+        drop_duplicates: bool = False,
+        limit: int = -1,
+        sample: int = -1,
+    ) -> Dict[str, List]:
+        """Read a parquet dataset from disk into a dictionary of columns"""
+        full_path = Path(self.base_path) / source
+        if Path(self.base_path) not in full_path.parents:
+            raise ValueError(
+                f"The given source path {source} is not in base_path {self.base_path}!"
+            )
+        df = pq.read_table(
+            str(full_path), columns=columns, use_threads=True, use_pandas_metadata=True
+        ).to_pydict()
+        if row_filter:
+            raise NotImplementedError("Row filtering is not implemented for dicts")
+        return df

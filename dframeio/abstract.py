@@ -14,8 +14,8 @@ class AbstractDataFrameReader:
     def read_to_pandas(
         self,
         source: str,
-        columns: List[str],
-        row_filter: str,
+        columns: List[str] = None,
+        row_filter: str = None,
         drop_duplicates: bool = False,
         limit: int = -1,
         sample: int = -1,
@@ -27,8 +27,8 @@ class AbstractDataFrameReader:
     def read_to_dict(
         self,
         source: str,
-        columns: List[str],
-        row_filter: str,
+        columns: List[str] = None,
+        row_filter: str = None,
         drop_duplicates: bool = False,
         limit: int = -1,
         sample: int = -1,
