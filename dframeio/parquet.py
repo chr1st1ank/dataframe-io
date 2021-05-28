@@ -1,12 +1,18 @@
 import pathlib
 from typing import List
 
-import pyarrow.parquet as pq
+from . import abstract
 
-from dframeio import abstract
+try:
+    import pyarrow.parquet as pq
+except ModuleNotFoundError as e:
+    if e.name == "pyarrow":
+        pq = None
+    else:
+        raise
 
 
-class ParquetBackend(abstract.Reader):
+class ParquetBackend(abstract.AbstractDataFrameReader):
     def __init__(self, base_path: str):
         self.base_path = base_path
 

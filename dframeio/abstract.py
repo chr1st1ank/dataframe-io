@@ -2,10 +2,10 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Union
 
-from dframeio.imports import pd
+from dframeio import pd
 
 
-class Reader:
+class AbstractDataFrameReader:
     """Interface for reading dataframes from different storage drivers"""
 
     @abstractmethod
@@ -17,7 +17,8 @@ class Reader:
         drop_duplicates: bool = False,
         limit: int = -1,
         sample: int = -1,
-    ):
+    ) -> pd.DataFrame:
+        """Read data into a pandas.DataFrame"""
         raise NotImplementedError()
 
     @abstractmethod
@@ -29,21 +30,24 @@ class Reader:
         drop_duplicates: bool = False,
         limit: int = -1,
         sample: int = -1,
-    ):
+    ) -> Dict[str, List]:
+        """Read data into a dict of named columns"""
         raise NotImplementedError()
 
 
-class Writer:
+class AbstractDataFrameWriter:
     """Interface for writing dataframes to different storage drivers"""
 
     @abstractmethod
     def write_replace(
         self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List[Any]]]
     ):
+        """Write data with full replacement of an existing dataset"""
         raise NotImplementedError()
 
     @abstractmethod
     def write_append(
         self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List[Any]]]
     ):
+        """Write data in append-mode"""
         raise NotImplementedError()
