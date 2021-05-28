@@ -114,7 +114,6 @@ disable = [
   "invalid-name",  # Creates warnings for local single-letter variables
   "fixme",  # Creates warnings for todo items
   "no-else-return",  # Creates refactor result for indented else block; which however might be more readable
-  "cyclic-import",  # Tends to create false positives
 ]
 
 [tool.pylint.design]

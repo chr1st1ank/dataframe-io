@@ -2,8 +2,10 @@
 from abc import abstractmethod
 from typing import Any, Dict, List, Union
 
-from dframeio import pd
-
+try:
+    import pandas as pd
+except ImportError:
+    pd = None
 
 class AbstractDataFrameReader:
     """Interface for reading dataframes from different storage drivers"""

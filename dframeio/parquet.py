@@ -4,6 +4,11 @@ from typing import List
 from . import abstract
 
 try:
+    import pandas as pd
+except ImportError:
+    pd = None
+
+try:
     import pyarrow.parquet as pq
 except ModuleNotFoundError as e:
     if e.name == "pyarrow":

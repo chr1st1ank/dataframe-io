@@ -15,17 +15,3 @@ except ModuleNotFoundError as e:
         pass
     else:
         raise
-
-
-# Import pandas centrally here if installed, so that dframeio is also usable without
-try:
-    import pandas as pd
-except ImportError:
-
-    class PandasInterface:
-        """Dummy for the uninstalled pandas package to allow using some names of it"""
-        # pylint: disable=R0903  # too few public methods
-        DataFrame = object
-        Series = object
-
-    pd = PandasInterface
