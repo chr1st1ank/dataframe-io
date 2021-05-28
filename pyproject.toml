@@ -70,13 +70,14 @@ toml = {version = "^0.10.2" }
 tox  = { version = "^3.20.1" }
 twine  = { version = "^3.3.0" }
 virtualenv  = { version = "^20.2.2" }
+pylint = "^2.8.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]
-line-length = 88
+line-length = 100
 include = '\.pyi?$'
 exclude = '''
 /(
@@ -99,4 +100,28 @@ include_trailing_comma = true
 force_grid_wrap = 0
 use_parentheses = true
 ensure_newline_before_comments = true
-line_length = 88
+line_length = 100
+
+[tool.pylint.master]
+reports = false
+msg-template = "{path}:{line}: {msg_id} ({symbol}) {msg} ({obj})"
+load-plugins = [
+  "pylint.extensions.docparams",   # Find parameters missing in docstrings
+  "pylint.extensions.docstyle",    # Detect wrong docstring formatting
+]
+disable = [
+  "bad-continuation",  # Creates many false positives conflicting with black
+  "invalid-name",  # Creates warnings for local single-letter variables
+  "fixme",  # Creates warnings for todo items
+  "no-else-return",  # Creates refactor result for indented else block; which however might be more readable
+  "cyclic-import",  # Tends to create false positives
+]
+
+[tool.pylint.design]
+max-args = 10  # Maximum number of arguments for functions
+max-attributes = 15  # Maximum number of attributes for a class
+#
+#[TYPECHECK]
+## List of members which are set dynamically and missed by pylint inference
+## system, and so shouldn't trigger E0201 when accessed.
+#generated-members=pytest.*
