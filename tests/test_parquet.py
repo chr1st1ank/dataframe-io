@@ -3,16 +3,16 @@
 from pathlib import Path
 
 import pandas as pd
+from pandas.util.testing import assert_frame_equal
 import pandera as pa
 import pytest
 
 import dframeio
 
-sample_data_nrows = 5000
-
 
 class SampleDataSchema(pa.SchemaModel):
-    """pandera schema of the test dataset"""
+    """pandera schema of the parquet test dataset"""
+
     registration_dttm: pa.typing.Series[pa.typing.DateTime]
     id: pa.typing.Series[pa.typing.Float64] = pa.Field(nullable=True)
     first_name: pa.typing.Series[pa.typing.String]
@@ -42,6 +42,31 @@ class SampleDataSchema(pa.SchemaModel):
 def sample_data_path(request):
     """Path of a parquet dataset for testing"""
     return Path(__file__).parent / "data" / "parquet" / request.param
+
+
+@pytest.fixture(scope="function")
+def sample_dataframe():
+    """Provide the sample dataframe"""
+    parquet_file = Path(__file__).parent / "data" / "parquet" / "singlefile.parquet"
+    backend = dframeio.ParquetBackend(str(parquet_file.parent))
+    return backend.read_to_pandas(parquet_file.name)
+
+
+@pytest.mark.parametrize(
+    "kwargs, exception",
+    [
+        ({"base_path": "/some/dir", "partitions": -1}, TypeError),
+        ({"base_path": "/some/dir", "partitions": 2.2}, TypeError),
+        ({"base_path": "/some/dir", "partitions": "abc"}, TypeError),
+        ({"base_path": "/some/dir", "partitions": b"abc"}, TypeError),
+        ({"base_path": "/some/dir", "rows_per_file": b"abc"}, TypeError),
+        ({"base_path": "/some/dir", "rows_per_file": 1.1}, TypeError),
+        ({"base_path": "/some/dir", "rows_per_file": -5}, ValueError),
+    ],
+)
+def test_init_argchecks(kwargs, exception):
+    with pytest.raises(exception):
+        dframeio.ParquetBackend(**kwargs)
 
 
 def test_read_to_pandas(sample_data_path):
@@ -105,3 +130,62 @@ def test_read_to_dict_base_path_check(sample_data_path):
     backend = dframeio.ParquetBackend(str(sample_data_path.parent))
     with pytest.raises(ValueError):
         backend.read_to_dict("/tmp")
+
+
+def test_write_replace_df(sample_dataframe, tmp_path_factory):
+    """Write the dataframe, read it again and check identity"""
+    tempdir = tmp_path_factory.mktemp("test_write_replace_df")
+
+    backend = dframeio.ParquetBackend(str(tempdir))
+    backend.write_replace("data.parquet", sample_dataframe)
+
+    backend2 = dframeio.ParquetBackend(str(tempdir))
+    dataframe_after = backend2.read_to_pandas("data.parquet")
+    assert_frame_equal(dataframe_after, sample_dataframe)
+
+
+def test_write_replace_multifile(sample_dataframe, tmp_path_factory):
+    """Write the dataframe, read it again and check identity"""
+    tempdir = tmp_path_factory.mktemp("test_write_replace_df")
+
+    backend = dframeio.ParquetBackend(str(tempdir), rows_per_file=1000)
+    backend.write_replace("data", sample_dataframe)
+
+    assert sum(1 for _ in (tempdir / "data").glob("*")) == 5, "There should be 5 files"
+
+    backend2 = dframeio.ParquetBackend(str(tempdir))
+    dataframe_after = backend2.read_to_pandas("data")
+    assert_frame_equal(dataframe_after, sample_dataframe)
+
+
+def test_write_replace_partitioned(sample_dataframe, tmp_path_factory):
+    """Write the dataframe, read it again and check identity"""
+    tempdir = tmp_path_factory.mktemp("test_write_replace_df")
+
+    backend = dframeio.ParquetBackend(str(tempdir), partitions=["gender"])
+    backend.write_replace("data", sample_dataframe)
+
+    created_partitions = {f.name for f in (tempdir / "data").glob("*=*")}
+    assert created_partitions == {"gender=", "gender=Female", "gender=Male"}
+
+    backend2 = dframeio.ParquetBackend(str(tempdir))
+    dataframe_after = backend2.read_to_pandas("data")
+
+    # It is o.k. to get the partition keys back as categoricals, because
+    # that's more efficient. For comparison we make the column string again.
+    dataframe_after = dataframe_after.assign(gender=dataframe_after["gender"].astype(str))
+    assert_frame_equal(
+        dataframe_after,
+        sample_dataframe,
+        check_like=True,
+    )
+
+
+@pytest.mark.parametrize("partitions", [[5], ["foobar"]])
+def test_write_replace_invalid_partitions(tmp_path_factory, partitions):
+    """Write the dataframe, read it again and check identity"""
+    tempdir = tmp_path_factory.mktemp("test_write_replace_df")
+
+    backend = dframeio.ParquetBackend(str(tempdir), partitions=partitions)
+    with pytest.raises(ValueError):
+        backend.write_replace("data.parquet", pd.DataFrame())

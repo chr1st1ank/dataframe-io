@@ -42,14 +42,14 @@ class AbstractDataFrameWriter:
 
     @abstractmethod
     def write_replace(
-        self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List[Any]]]
+        self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List]]
     ):
         """Write data with full replacement of an existing dataset"""
         raise NotImplementedError()
 
     @abstractmethod
     def write_append(
-        self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List[Any]]]
+        self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List]]
     ):
         """Write data in append-mode"""
         raise NotImplementedError()
