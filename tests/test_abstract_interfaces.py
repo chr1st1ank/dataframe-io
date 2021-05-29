@@ -16,7 +16,7 @@ def method_names(cls: typing.Type) -> typing.List[str]:
 @pytest.mark.parametrize("function", method_names(abstract.AbstractDataFrameReader))
 @pytest.mark.parametrize("backend", dframeio.backends)
 def test_abstract_reader__methods_implemented(backend: typing.Type, function: str):
-    """Checks if all functions of AbstractDataFrameReader are implemented """
+    """Checks if all functions of AbstractDataFrameReader are implemented"""
     method = getattr(backend, function)
     assert not hasattr(
         method, "__isabstractmethod__"

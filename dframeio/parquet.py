@@ -1,4 +1,5 @@
 """Implementation to access parquet datasets using pyarrow."""
+import shutil
 from pathlib import Path
 from typing import Dict, Iterable, List, Union
 
@@ -126,11 +127,16 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
 
         Raises:
              ValueError: If the dataframe does not contain the columns to partition by
-                as specified in the [`__init__`](#dframeio.parquet.ParquetBackend.__init__) function.
+                as specified in the [`__init__`](#dframeio.parquet.ParquetBackend.__init__)
+                function.
         """
         full_path = self._validated_full_path(target)
+        if full_path.exists():
+            if full_path.is_file():
+                full_path.unlink()
+            elif full_path.is_dir():
+                shutil.rmtree(str(full_path), ignore_errors=True)
         if self._rows_per_file > 0:
-            # TODO: Implement the overwrite functionality
             full_path.mkdir(exist_ok=True)
             for i in range(0, len(dataframe), self._rows_per_file):
                 pq.write_table(
@@ -145,7 +151,6 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
             for p in self._partitions:
                 if p not in dataframe.columns:
                     raise ValueError(f"Expected the dataframe to have the partition column {p}")
-            # TODO: Implement the overwrite functionality
             pq.write_to_dataset(
                 pa.Table.from_pandas(dataframe, preserve_index=True),
                 root_path=str(full_path),
@@ -154,7 +159,6 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
                 compression="snappy",
             )
         else:
-            # TODO: Implement the overwrite functionality
             pq.write_table(
                 pa.Table.from_pandas(dataframe, preserve_index=True),
                 where=str(full_path),

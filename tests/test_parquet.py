@@ -133,9 +133,12 @@ def test_read_to_dict_base_path_check(sample_data_path):
         backend.read_to_dict("/tmp")
 
 
-def test_write_replace_df(sample_dataframe, tmp_path_factory):
+@pytest.mark.parametrize("old_content", [False, True])
+def test_write_replace_df(sample_dataframe, tmp_path_factory, old_content):
     """Write the dataframe, read it again and check identity"""
     tempdir = tmp_path_factory.mktemp("test_write_replace_df")
+    if old_content:
+        (tempdir / "data.parquet").open("w").close()
 
     backend = dframeio.ParquetBackend(str(tempdir))
     backend.write_replace("data.parquet", sample_dataframe)
@@ -145,23 +148,33 @@ def test_write_replace_df(sample_dataframe, tmp_path_factory):
     assert_frame_equal(dataframe_after, sample_dataframe)
 
 
-def test_write_replace_multifile(sample_dataframe, tmp_path_factory):
+@pytest.mark.parametrize("old_content", [False, True])
+def test_write_replace_multifile(sample_dataframe, tmp_path_factory, old_content):
     """Write the dataframe, read it again and check identity"""
     tempdir = tmp_path_factory.mktemp("test_write_replace_df")
+    if old_content:
+        (tempdir / "data").mkdir()
+        (tempdir / "data" / "old.parquet").open("w").close()
 
     backend = dframeio.ParquetBackend(str(tempdir), rows_per_file=1000)
     backend.write_replace("data", sample_dataframe)
 
     assert sum(1 for _ in (tempdir / "data").glob("*")) == 5, "There should be 5 files"
 
+    if old_content:
+        assert not (tempdir / "data" / "old.parquet").exists()
     backend2 = dframeio.ParquetBackend(str(tempdir))
     dataframe_after = backend2.read_to_pandas("data")
     assert_frame_equal(dataframe_after, sample_dataframe)
 
 
-def test_write_replace_partitioned(sample_dataframe, tmp_path_factory):
+@pytest.mark.parametrize("old_content", [False, True])
+def test_write_replace_partitioned(sample_dataframe, tmp_path_factory, old_content):
     """Write the dataframe, read it again and check identity"""
     tempdir = tmp_path_factory.mktemp("test_write_replace_df")
+    if old_content:
+        (tempdir / "data").mkdir()
+        (tempdir / "data" / "old.parquet").open("w").close()
 
     backend = dframeio.ParquetBackend(str(tempdir), partitions=["gender"])
     backend.write_replace("data", sample_dataframe)
@@ -169,9 +182,11 @@ def test_write_replace_partitioned(sample_dataframe, tmp_path_factory):
     created_partitions = {f.name for f in (tempdir / "data").glob("*=*")}
     assert created_partitions == {"gender=", "gender=Female", "gender=Male"}
 
+    if old_content:
+        assert not (tempdir / "data" / "old.parquet").exists()
+
     backend2 = dframeio.ParquetBackend(str(tempdir))
     dataframe_after = backend2.read_to_pandas("data")
-
     # It is o.k. to get the partition keys back as categoricals, because
     # that's more efficient. For comparison we make the column string again.
     dataframe_after = dataframe_after.assign(gender=dataframe_after["gender"].astype(str))
