@@ -8,6 +8,7 @@ backends = []
 
 try:
     from dframeio.parquet import ParquetBackend
+
     backends.append(ParquetBackend)
 except ModuleNotFoundError as e:
     if e.name == "pyarrow":

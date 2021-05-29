@@ -1,3 +1,8 @@
+ci:
+  autofix_prs: false
+  autoupdate_schedule: monthly
+  skip: []
+  submodules: false
 repos:
 -   repo: https://github.com/Lucas-C/pre-commit-hooks
     rev: v1.1.10
