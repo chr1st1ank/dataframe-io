@@ -62,5 +62,7 @@ class ParquetBackend(abstract.AbstractDataFrameReader):
             str(full_path), columns=columns, use_threads=True, use_pandas_metadata=True
         ).to_pydict()
         if row_filter:
+            # TODO: Pyarrow supports filtering on loading
+            #  https://arrow.apache.org/docs/python/generated/pyarrow.parquet.ParquetDataset.html
             raise NotImplementedError("Row filtering is not implemented for dicts")
         return df

@@ -22,3 +22,14 @@ column#		column_name		hive_datatype
 12		title 			string
 13		comments 		string
 ```
+
+
+The singlefile and multifolder variants were generated from the original multifile
+flavour by:
+```
+import pyarrow as pa
+import pyarrow.parquet as pq
+df = pq.read_table(".../parquet/multifile").to_pandas()
+df.to_parquet('.../parquet/singlefile.parquet',index=False)
+pq.write_to_dataset(pa.Table.from_pandas(df, preserve_index=False), partition_cols=["gender"], flavor="spark", compression="snappy", root_path=".../parquet/multifolder/")
+```

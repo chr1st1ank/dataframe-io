@@ -17,7 +17,7 @@ class SampleDataSchema(pa.SchemaModel):
     first_name: pa.typing.Series[pa.typing.String]
     last_name: pa.typing.Series[pa.typing.String]
     email: pa.typing.Series[pa.typing.String]
-    gender: pa.typing.Series[pa.typing.String]
+    gender: pa.typing.Series[pa.typing.String] = pa.Field(coerce=True)
     ip_address: pa.typing.Series[pa.typing.String]
     cc: pa.typing.Series[pa.typing.String]
     country: pa.typing.Series[pa.typing.String]
@@ -33,9 +33,9 @@ class SampleDataSchema(pa.SchemaModel):
         return 2384
 
 
-@pytest.fixture
-def sample_data_path():
-    return Path(__file__).parent / "data" / "parquet" / "multifile"
+@pytest.fixture(params = ["multifile", "singlefile.parquet", "multifolder"])
+def sample_data_path(request):
+    return Path(__file__).parent / "data" / "parquet" / request.param
 
 
 def test_read_to_pandas(sample_data_path):
