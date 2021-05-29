@@ -3,9 +3,9 @@
 from pathlib import Path
 
 import pandas as pd
-from pandas.util.testing import assert_frame_equal
 import pandera as pa
 import pytest
+from pandas.util.testing import assert_frame_equal
 
 import dframeio
 
@@ -65,6 +65,7 @@ def sample_dataframe():
     ],
 )
 def test_init_argchecks(kwargs, exception):
+    """Challenge the argument validation of the constructor"""
     with pytest.raises(exception):
         dframeio.ParquetBackend(**kwargs)
 

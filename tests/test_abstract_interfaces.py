@@ -32,8 +32,6 @@ def test_abstract_reader_method_signatures(backend: typing.Type, function: str):
     base class. Arguments have to be the same, including names, default values and
     type hints.
     """
-    abstract_signature = inspect.getfullargspec(
-        getattr(abstract.AbstractDataFrameReader, function)
-    )
+    abstract_signature = inspect.getfullargspec(getattr(abstract.AbstractDataFrameReader, function))
     concrete_signature = inspect.getfullargspec(getattr(backend, function))
     assert concrete_signature == abstract_signature

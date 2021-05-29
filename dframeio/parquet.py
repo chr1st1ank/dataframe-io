@@ -1,6 +1,6 @@
 """Implementation to access parquet datasets using pyarrow."""
 from pathlib import Path
-from typing import List, Dict, Union, Iterable
+from typing import Dict, Iterable, List, Union
 
 from .abstract import AbstractDataFrameReader, AbstractDataFrameWriter
 
@@ -47,13 +47,13 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         Raises:
              ValueError: If any of the input arguments are outside of the documented
                 value ranges or if conflicting arguments are given.
-            TypeError: If any of the input arguments has a diffent type as documented
+             TypeError: If any of the input arguments has a diffent type as documented
         """
         self._base_path = base_path
 
         if partitions is not None and rows_per_file != 0:
             raise ValueError("Only one of 'partitions' and 'rows_per_file' can be used.")
-        elif rows_per_file != 0:
+        if rows_per_file != 0:
             if not isinstance(rows_per_file, int):
                 raise TypeError(
                     f"Expected a positive integer for rows_per_file, but got {rows_per_file}."
@@ -168,6 +168,8 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
 
     def _validated_full_path(self, path: Union[str, Path]) -> Path:
         """Make sure the given path is in self._base_path and return the full path
+
+        Returns: The full path as pathlib object
 
         Raises:
             ValueError: If the path is not in the base path
