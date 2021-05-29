@@ -1,9 +1,9 @@
 """Unit tests for the reading functionality in dframeio.parquet"""
+# pylint: disable=redefined-outer-name
 from pathlib import Path
 
 import pandas as pd
 import pandera as pa
-import pandera.typing
 import pytest
 
 import dframeio
@@ -12,6 +12,7 @@ sample_data_nrows = 5000
 
 
 class SampleDataSchema(pa.SchemaModel):
+    """pandera schema of the test dataset"""
     registration_dttm: pa.typing.Series[pa.typing.DateTime]
     id: pa.typing.Series[pa.typing.Float64] = pa.Field(nullable=True)
     first_name: pa.typing.Series[pa.typing.String]
@@ -25,16 +26,21 @@ class SampleDataSchema(pa.SchemaModel):
     salary: pa.typing.Series[pa.typing.Float64] = pa.Field(nullable=True)
     title: pa.typing.Series[pa.typing.String]
     comments: pa.typing.Series[pa.typing.String] = pa.Field(nullable=True)
+
     @staticmethod
     def length():
+        """Known length of the data"""
         return 5000
+
     @staticmethod
     def n_salary_over_150000():
+        """Number of rows with salary > 150000"""
         return 2384
 
 
-@pytest.fixture(params = ["multifile", "singlefile.parquet", "multifolder"])
+@pytest.fixture(params=["multifile", "singlefile.parquet", "multifolder"])
 def sample_data_path(request):
+    """Path of a parquet dataset for testing"""
     return Path(__file__).parent / "data" / "parquet" / request.param
 
 
@@ -91,10 +97,7 @@ def test_read_to_dict_some_rows(sample_data_path):
     """Read a sample dataset into a dictionary, filtering some rows"""
     backend = dframeio.ParquetBackend(str(sample_data_path.parent))
     with pytest.raises(NotImplementedError):
-        df = backend.read_to_dict(sample_data_path.name, row_filter="salary > 150000")
-    # df = pd.DataFrame(df)
-    # SampleDataSchema.to_schema().validate(df)
-    # assert len(df) == SampleDataSchema.n_salary_over_150000()
+        backend.read_to_dict(sample_data_path.name, row_filter="salary > 150000")
 
 
 def test_read_to_dict_base_path_check(sample_data_path):

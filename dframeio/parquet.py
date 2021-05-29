@@ -1,3 +1,4 @@
+"""Implementation to access parquet datasets using pyarrow."""
 from pathlib import Path
 from typing import List, Dict
 
@@ -18,6 +19,7 @@ except ModuleNotFoundError as e:
 
 
 class ParquetBackend(abstract.AbstractDataFrameReader):
+    """Backend to read and write parquet datasets"""
     def __init__(self, base_path: str):
         self.base_path = base_path
 
