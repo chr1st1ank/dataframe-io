@@ -1,4 +1,5 @@
 """Implementation to access parquet datasets using pyarrow."""
+import collections
 import shutil
 from pathlib import Path
 from typing import Dict, Iterable, List, Union
@@ -138,36 +139,60 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
                 shutil.rmtree(str(full_path), ignore_errors=True)
         if self._rows_per_file > 0:
             full_path.mkdir(exist_ok=True)
-            for i in range(0, len(dataframe), self._rows_per_file):
+            for i in range(0, self._n_rows(dataframe), self._rows_per_file):
                 pq.write_table(
-                    pa.Table.from_pandas(
-                        dataframe.iloc[i : i + self._rows_per_file], preserve_index=True
-                    ),
+                    self._dataframe_slice_as_arrow_table(dataframe, i, i + self._rows_per_file),
                     where=str(full_path / (full_path.name + str(i))),
                     flavor="spark",
                     compression="snappy",
                 )
-        elif self._partitions is not None:
-            for p in self._partitions:
-                if p not in dataframe.columns:
-                    raise ValueError(f"Expected the dataframe to have the partition column {p}")
-            pq.write_to_dataset(
-                pa.Table.from_pandas(dataframe, preserve_index=True),
-                root_path=str(full_path),
-                partition_cols=self._partitions,
-                flavor="spark",
-                compression="snappy",
-            )
         else:
-            pq.write_table(
-                pa.Table.from_pandas(dataframe, preserve_index=True),
-                where=str(full_path),
-                flavor="spark",
-                compression="snappy",
+            arrow_table = self._to_arrow_table(dataframe)
+
+            if self._partitions is not None:
+                missing_columns = set(self._partitions) - set(arrow_table.column_names)
+                if missing_columns:
+                    raise ValueError(
+                        f"Expected the dataframe to have the partition columns {missing_columns}"
+                    )
+                pq.write_to_dataset(
+                    arrow_table,
+                    root_path=str(full_path),
+                    partition_cols=self._partitions,
+                    flavor="spark",
+                    compression="snappy",
+                )
+            else:
+                pq.write_table(
+                    arrow_table,
+                    where=str(full_path),
+                    flavor="spark",
+                    compression="snappy",
+                )
+
+    @staticmethod
+    def _n_rows(dataframe):
+        if isinstance(dataframe, pd.DataFrame):
+            return len(dataframe)
+        if isinstance(dataframe, collections.Mapping):
+            return len(next(iter(dataframe.values())))
+        raise ValueError("dataframe must be a pandas.DataFrame or dict")
+
+    @staticmethod
+    def _dataframe_slice_as_arrow_table(
+        dataframe: Union[pd.DataFrame, Dict[str, List]], start: int, stop: int
+    ):
+        if isinstance(dataframe, pd.DataFrame):
+            return pa.Table.from_pandas(dataframe.iloc[start:stop], preserve_index=True)
+        if isinstance(dataframe, collections.Mapping):
+            return pa.Table.from_pydict(
+                {colname: col[start:stop] for colname, col in dataframe.items()}
             )
+        raise ValueError("dataframe must be a pandas.DataFrame or dict")
 
     def write_append(self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List]]):
         """Write data in append-mode"""
+        # TODO: Implement
         raise NotImplementedError()
 
     def _validated_full_path(self, path: Union[str, Path]) -> Path:
@@ -182,3 +207,12 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         if Path(self._base_path) not in full_path.parents:
             raise ValueError(f"The given path {path} is not in base_path {self._base_path}!")
         return full_path
+
+    @staticmethod
+    def _to_arrow_table(dataframe: Union[pd.DataFrame, Dict[str, List]]):
+        """Convert the dataframe to an arrow table"""
+        if isinstance(dataframe, pd.DataFrame):
+            return pa.Table.from_pandas(dataframe, preserve_index=True)
+        if isinstance(dataframe, collections.Mapping):
+            return pa.Table.from_pydict(dataframe)
+        raise ValueError("dataframe must be a pandas.DataFrame or dict")
