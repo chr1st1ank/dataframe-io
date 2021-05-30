@@ -22,7 +22,7 @@ jobs:
 
     strategy:
       matrix:
-        python-versions: [3.8]
+        python-versions: [3.9]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -40,6 +40,10 @@ jobs:
           unreleased: true
           addSections: '{"documentation":{"prefix":"**Documentation:**","labels":["documentation"]}}'
           output: CHANGELOG.md
+
+      - name: show changelog
+        run: >-
+          cat CHANGELOG.md
 
       - uses: actions/setup-python@v2
         with:
