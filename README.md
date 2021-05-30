@@ -1,12 +1,12 @@
 # dataframe-io
 
 
-<p align="center">
 <a href="https://pypi.python.org/pypi/dframeio">
     <img src="https://img.shields.io/pypi/v/dframeio.svg"
         alt = "Release Status">
 </a>
 
+[![codecov](https://codecov.io/gh/chr1st1ank/dataframe-io/branch/master/graph/badge.svg?token=4oBkRHXbfa)](https://codecov.io/gh/chr1st1ank/dataframe-io)
 <a href="https://github.com/chr1st1ank/dframeio/actions">
     <img src="https://github.com/chr1st1ank/dframeio/actions/workflows/main.yml/badge.svg?branch=release" alt="CI Status">
 </a>
@@ -14,8 +14,6 @@
 <a href="https://dframeio.readthedocs.io/en/latest/?badge=latest">
     <img src="https://readthedocs.org/projects/dframeio/badge/?version=latest" alt="Documentation Status">
 </a>
-
-</p>
 
 
  Read and write dataframes anywhere

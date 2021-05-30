@@ -170,6 +170,11 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
                     compression="snappy",
                 )
 
+    def write_append(self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List]]):
+        """Write data in append-mode"""
+        # TODO: Implement
+        raise NotImplementedError()
+
     @staticmethod
     def _n_rows(dataframe):
         if isinstance(dataframe, pd.DataFrame):
@@ -189,11 +194,6 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
                 {colname: col[start:stop] for colname, col in dataframe.items()}
             )
         raise ValueError("dataframe must be a pandas.DataFrame or dict")
-
-    def write_append(self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List]]):
-        """Write data in append-mode"""
-        # TODO: Implement
-        raise NotImplementedError()
 
     def _validated_full_path(self, path: Union[str, Path]) -> Path:
         """Make sure the given path is in self._base_path and return the full path
