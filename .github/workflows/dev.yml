@@ -48,10 +48,11 @@ jobs:
           poetry run tox
 
       - name: list files
+        if: ${{ always() }}
         run: ls -l .
 
       - name: Publish Unit Test Results
-        if: matrix.python-version
+        if: ${{ matrix.python-version && always() }}
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
         with:
           files: pytest.xml
