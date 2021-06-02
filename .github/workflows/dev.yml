@@ -3,9 +3,9 @@ name: dev workflow
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master,main,release ]
+    branches: [ master, main, release ]
   pull_request:
-    branches: [ master,main,release ]
+    branches: [ master, main, release ]
 
   workflow_dispatch:
 
@@ -50,17 +50,13 @@ jobs:
         if: ${{ always() }}
         run: ls -l .
 
-      - name: Publish Pylint Results
+      - name: Publish Test Results
         if: ${{ matrix.python-version && always() }}
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
         with:
-          files: .pylint.json
-
-      - name: Publish Unit Test Results
-        if: ${{ matrix.python-version && always() }}
-        uses: EnricoMi/publish-unit-test-result-action/composite@v1
-        with:
-          files: pytest.xml
+          files: |
+            pytest.xml
+            .pylint.json
 
       - uses: codecov/codecov-action@v1
         if: ${{ matrix.python-version && always() }}
