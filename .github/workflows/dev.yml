@@ -15,11 +15,11 @@ jobs:
       matrix:
 #        python-version: [3.7, 3.8, 3.9]
         python-version: [3.9, 3.8]
-        os: [ubuntu-18.04]
+        os: [ubuntu-20.04, windows-latest]
 #        os: [ubuntu-18.04, macos-latest, windows-latest]
         include:
           - python-version: 3.9
-            os: ubuntu-18.04
+            os: ubuntu-20.04
             publish-results: true
     runs-on: ${{ matrix.os }}
 
