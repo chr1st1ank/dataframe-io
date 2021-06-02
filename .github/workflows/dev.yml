@@ -21,7 +21,7 @@ jobs:
           - python-version: 3.9
             os: ubuntu-20.04
             publish-results: true
-            test-only: true
+            tox-full-run: true
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -37,12 +37,12 @@ jobs:
           poetry install
 
       - name: Test with tox
-        if: ${{ matrix.test-only }}
+        if: ${{ matrix.tox-full-run }}
         run:
           poetry run tox
 
       - name: Lint and test with tox
-        if: ${{ !matrix.test-only }}
+        if: ${{ !matrix.tox-full-run }}
         run:
           poetry run tox
 
