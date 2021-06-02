@@ -13,9 +13,7 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   release:
     name: Create Release
     runs-on: ubuntu-20.04
@@ -43,7 +41,7 @@ jobs:
 
       - name: show changelog
         run: >-
-          cat CHANGELOG.md
+          cat CHANGELOG.md || echo "No changelog"
 
       - uses: actions/setup-python@v2
         with:
@@ -52,7 +50,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install tox-gh-actions poetry
+          pip install poetry
+          poetry install
 
       - name: pre-publish documentation
         run: |
@@ -73,16 +72,16 @@ jobs:
         run: >-
           ls -l
 
-      - name: create github release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          body_path: ./CHANGELOG.md
-          files: dist/*.whl
-          draft: false
-          prerelease: false
+#      - name: create github release
+#        id: create_release
+#        uses: softprops/action-gh-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          body_path: ./CHANGELOG.md
+#          files: dist/*.whl
+#          draft: false
+#          prerelease: false
 
       - name:
         uses: pypa/gh-action-pypi-publish@release/v1

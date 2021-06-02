@@ -21,6 +21,7 @@ jobs:
           - python-version: 3.9
             os: ubuntu-20.04
             publish-results: true
+            test-only: true
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -35,7 +36,13 @@ jobs:
           pip install poetry tox tox-gh-actions
           poetry install
 
-      - name: test with tox
+      - name: Test with tox
+        if: ${{ matrix.test-only }}
+        run:
+          poetry run tox
+
+      - name: Lint and test with tox
+        if: ${{ !matrix.test-only }}
         run:
           poetry run tox
 
