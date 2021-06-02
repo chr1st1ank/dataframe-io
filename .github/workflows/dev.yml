@@ -32,12 +32,12 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install poetry tox tox-gh-actions pylint_junit
+          pip install poetry tox tox-gh-actions
           poetry install
 
       - name: Pylint
         run:
-          poetry run pylint --output-format=pylint_junit.JUnitReporter -r y  dframeio tests | tee .pylint.json
+          poetry run pylint --output-format=pylint_junit.JUnitReporter --fail-under 9.0  dframeio tests | tee .pylint.json
           #poetry run pylint --output-format=colorized -r y  dframeio tests
 #      - uses: cclauss/GitHub-Action-for-pylint@0.7.0
 #      - run: pip install -r requirements.txt ; pylint **/*.py

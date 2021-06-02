@@ -324,6 +324,17 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "junit-xml-2"
+version = "1.9"
+description = "Fork of https://github.com/kyrus/python-junit-xml that has tarball published to pypi"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = "*"
+
+[[package]]
 name = "keyring"
 version = "23.0.1"
 description = "Store and access your passwords safely."
@@ -717,6 +728,18 @@ mccabe = ">=0.6,<0.7"
 toml = ">=0.7.1"
 
 [[package]]
+name = "pylint-junit"
+version = "0.3.2"
+description = "pylint reporter for junit format."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+junit-xml-2 = "*"
+pylint = "*"
+
+[[package]]
 name = "pymdown-extensions"
 version = "8.2"
 description = "Extension pack for Python Markdown."
@@ -1099,7 +1122,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7.1,<4.0"
-content-hash = "167b8a20c6a6996f635cc993e382f30eb3e47e71ae1e4f83baab4aaad7cfc7a4"
+content-hash = "f86f715be54c6382debc91b5f99571ec16f95e577d440529d02331579da91629"
 
 [metadata.files]
 appdirs = [
@@ -1323,6 +1346,10 @@ jinja2 = [
 joblib = [
     {file = "joblib-1.0.1-py3-none-any.whl", hash = "sha256:feeb1ec69c4d45129954f1b7034954241eedfd6ba39b5e9e4b6883be3332d5e5"},
     {file = "joblib-1.0.1.tar.gz", hash = "sha256:9c17567692206d2f3fb9ecf5e991084254fe631665c450b443761c4186a613f7"},
+]
+junit-xml-2 = [
+    {file = "junit-xml-2-1.9.tar.gz", hash = "sha256:3b8d9635c5215f754c7807104f6493e3ea3bc9481e2d33db294560da3a1b00f7"},
+    {file = "junit_xml_2-1.9-py2.py3-none-any.whl", hash = "sha256:05093d75fe11120ccd51293884b5ee334ff3bc4b5106647c2bcc928486600588"},
 ]
 keyring = [
     {file = "keyring-23.0.1-py3-none-any.whl", hash = "sha256:8f607d7d1cc502c43a932a275a56fe47db50271904513a379d39df1af277ac48"},
@@ -1561,6 +1588,9 @@ pygments = [
 pylint = [
     {file = "pylint-2.8.2-py3-none-any.whl", hash = "sha256:f7e2072654a6b6afdf5e2fb38147d3e2d2d43c89f648637baab63e026481279b"},
     {file = "pylint-2.8.2.tar.gz", hash = "sha256:586d8fa9b1891f4b725f587ef267abe2a1bad89d6b184520c7f07a253dd6e217"},
+]
+pylint-junit = [
+    {file = "pylint_junit-0.3.2.tar.gz", hash = "sha256:c6dbe956e55bb9b365d86e2ec77b58df6b95262b5515d187ac54b8359507174b"},
 ]
 pymdown-extensions = [
     {file = "pymdown-extensions-8.2.tar.gz", hash = "sha256:b6daa94aad9e1310f9c64c8b1f01e4ce82937ab7eb53bfc92876a97aca02a6f4"},
