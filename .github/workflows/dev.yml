@@ -39,7 +39,7 @@ jobs:
       - name: Test with tox
         if: ${{ !matrix.tox-full-run }}
         run:
-          poetry run tox
+          poetry run tox -e test
 
       - name: Lint and test with tox
         if: ${{ matrix.tox-full-run }}
