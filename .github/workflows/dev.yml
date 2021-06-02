@@ -32,16 +32,29 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install poetry tox tox-gh-actions
+          pip install poetry tox tox-gh-actions pylint_junit
           poetry install
 
       - name: test with tox
         run:
           poetry run tox
 
+      - name: Pylint
+        run:
+          poetry run pylint --output-format=pylint_junit.JUnitReporter -r y  dframeio tests | tee .pylint.json
+          #poetry run pylint --output-format=colorized -r y  dframeio tests
+#      - uses: cclauss/GitHub-Action-for-pylint@0.7.0
+#      - run: pip install -r requirements.txt ; pylint **/*.py
+
       - name: list files
         if: ${{ always() }}
         run: ls -l .
+
+      - name: Publish Pylint Results
+        if: ${{ matrix.python-version && always() }}
+        uses: EnricoMi/publish-unit-test-result-action/composite@v1
+        with:
+          files: .pylint.json
 
       - name: Publish Unit Test Results
         if: ${{ matrix.python-version && always() }}
