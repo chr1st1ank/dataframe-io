@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
 #        python-version: [3.7, 3.8, 3.9]
-        python-version: [3.9]
+        python-version: [3.9, 3.8]
         os: [ubuntu-18.04]
 #        os: [ubuntu-18.04, macos-latest, windows-latest]
         include:
@@ -35,13 +35,6 @@ jobs:
           pip install poetry tox tox-gh-actions
           poetry install
 
-      - name: Pylint
-        run:
-          poetry run pylint --output-format=pylint_junit.JUnitReporter --fail-under 9.0  dframeio tests | tee .pylint.json
-          #poetry run pylint --output-format=colorized -r y  dframeio tests
-#      - uses: cclauss/GitHub-Action-for-pylint@0.7.0
-#      - run: pip install -r requirements.txt ; pylint **/*.py
-
       - name: test with tox
         run:
           poetry run tox
@@ -51,15 +44,13 @@ jobs:
         run: ls -l .
 
       - name: Publish Test Results
-        if: ${{ matrix.python-version && always() }}
+        if: ${{ matrix.publish-results && always() }}
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
         with:
-          files: |
-            pytest.xml
-            .pylint.json
+          files: pytest.xml
 
       - uses: codecov/codecov-action@v1
-        if: ${{ matrix.python-version && always() }}
+        if: ${{ matrix.publish-results && always() }}
         with:
           fail_ci_if_error: true
           files: coverage.xml
