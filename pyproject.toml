@@ -36,7 +36,8 @@ test = [
     "isort",
     "flake8",
     "flake8-docstrings",
-    "pytest-cov"
+    "pytest-cov",
+    "yamllint"
     ]
 
 dev = ["tox", "pre-commit", "virtualenv", "pip", "twine", "toml"]
@@ -72,6 +73,8 @@ twine  = { version = "^3.3.0" }
 virtualenv  = { version = "^20.2.2" }
 pylint = "^2.8.2"
 pandera = "^0.6.4"
+yamllint = "^1.26.1"
+pylint-junit = "^0.3.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
