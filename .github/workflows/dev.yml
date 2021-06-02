@@ -37,12 +37,12 @@ jobs:
           poetry install
 
       - name: Test with tox
-        if: ${{ matrix.tox-full-run }}
+        if: ${{ !matrix.tox-full-run }}
         run:
           poetry run tox
 
       - name: Lint and test with tox
-        if: ${{ !matrix.tox-full-run }}
+        if: ${{ matrix.tox-full-run }}
         run:
           poetry run tox
 
