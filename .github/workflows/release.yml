@@ -83,9 +83,5 @@ jobs:
 #          draft: false
 #          prerelease: false
 
-      - name:
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          skip_existing: true
+      - name: Publish to PyPi
+        run: poetry publish --username __token__ --password ${{ secrets.PYPI_API_TOKEN }}
