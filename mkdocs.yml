@@ -1,73 +1,27 @@
 site_name: dataframe-io
-# site_url: http://www.jieyu.ai
 repo_url: https://github.com/chr1st1ank/dframeio
 repo_name: dframeio
-#strict: true
 nav:
   - Home: index.md
   - Installation: installation.md
   - Usage: usage.md
-  - API documentation: api.md
+  - API documentation: mkapi/api/dframeio
   - Contributing: contributing.md
 theme:
-  name: material
+  name: readthedocs
   language: en
-  #logo: assets/logo.png
-  palette:
-    primary: light blue
-  features:
-    - navigation.indexes
-    - navigation.tabs
-    - navigation.instant
-    - navigation.tabs.sticky
+  highlightjs: true
 markdown_extensions:
-  - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
-  - pymdownx.critic
-  - pymdownx.caret
-  - pymdownx.mark
-  - pymdownx.tilde
-  - pymdownx.tabbed
-  - attr_list
-  - pymdownx.arithmatex:
-      generic: true
-  - pymdownx.highlight:
-      linenums: true
-  - pymdownx.superfences
-  - pymdownx.details
   - admonition
   - toc:
-      baselevel: 2
+      baselevel: 1
       permalink: true
-      slugify: !!python/name:pymdownx.slugs.uslugify
   - meta
 plugins:
   - include-markdown
   - autorefs
   - search:
       lang: en
-  - mkdocstrings:
-      watch:
+  - mkapi:
+      src_dirs:
         - dframeio
-extra:
-  social:
-#    - icon: fontawesome/brands/twitter
-#      # replace with your own tweet link below
-#      link: http://www.jieyu.ai
-#      name: Tweet
-#    - icon: fontawesome/brands/facebook
-#      # replace with your own facebook link below
-#      link: http://www.jieyu.ai
-#      name: Facebook
-#    - icon: fontawesome/brands/github
-#      link: https://github.com/chr1st1ank/dframeio
-#      name: Github
-#    - icon: material/email
-#      link: "mailto:chr1st1ank@krudewig-online.de"
-  # to enable disqus, uncomment the following and put your disqus id below
-  # disqus: disqus_id
-# uncomment the following and put your google tracking id below to enable GA
-#google_analytics:
-  #- UA-xxx
-  #- auto

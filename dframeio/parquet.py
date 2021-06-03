@@ -22,35 +22,34 @@ except ModuleNotFoundError as e:
 
 
 class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
-    """Backend to read and write parquet datasets"""
+    """Backend to read and write parquet datasets
+
+    Args:
+        base_path:
+        partitions: (For writing only) Columns to use for partitioning.
+            If given, the write functions split the data into a parquet dataset.
+            Subfolders with the following naming schema are created when writing:
+            `column_name=value`.
+
+            Per default data is written as a single file.
+
+            Cannot be combined with rows_per_file.
+
+        rows_per_file: (For writing only) If a positive integer value is given
+            this specifies the desired number of rows per file. The data is then
+            written to multiple files.
+
+            Per default data is written as a single file.
+
+            Cannot be combined with partitions.
+
+    Raises:
+         ValueError: If any of the input arguments are outside of the documented
+            value ranges or if conflicting arguments are given.
+         TypeError: If any of the input arguments has a diffent type as documented
+    """
 
     def __init__(self, base_path: str, partitions: Iterable[str] = None, rows_per_file: int = 0):
-        """Create a new ParquetBackend object
-
-        Args:
-            base_path:
-            partitions: (For writing only) Columns to use for partitioning.
-                If given, the write functions split the data into a parquet dataset.
-                Subfolders with the following naming schema are created when writing:
-                `column_name=value`.
-
-                Per default data is written as a single file.
-
-                Cannot be combined with rows_per_file.
-
-            rows_per_file: (For writing only) If a positive integer value is given
-                this specifies the desired number of rows per file. The data is then
-                written to multiple files.
-
-                Per default data is written as a single file.
-
-                Cannot be combined with partitions.
-
-        Raises:
-             ValueError: If any of the input arguments are outside of the documented
-                value ranges or if conflicting arguments are given.
-             TypeError: If any of the input arguments has a diffent type as documented
-        """
         self._base_path = base_path
 
         if partitions is not None and rows_per_file != 0:
@@ -77,11 +76,29 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         source: str,
         columns: List[str] = None,
         row_filter: str = None,
-        drop_duplicates: bool = False,
         limit: int = -1,
         sample: int = -1,
+        drop_duplicates: bool = False,
     ) -> pd.DataFrame:
-        """Read a parquet dataset from disk into a pandas dataframe"""
+        """Read a parquet dataset from disk into a pandas DataFrame
+
+        Args:
+            source: The path of the file or folder with a parquet dataset to read
+            columns: List of column names to limit the reading to
+            row_filter: Filter expression for selecting rows.
+            limit: Maximum number of rows to return (top-n)
+            sample: Size of a random sample to return
+            drop_duplicates: Whether to drop duplicate rows from the final selection
+
+        Returns:
+            A pandas DataFrame with the requested data.
+
+        Raises:
+            ValueError: If path specified with `source` is outside of the base path
+
+        The logic of the filtering arguments is as documented for
+        [`AbstractDataFrameReader.read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).
+        """
         full_path = Path(self._base_path) / source
         if Path(self._base_path) not in full_path.parents:
             raise ValueError(
@@ -93,7 +110,11 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
             str(full_path), columns=columns, use_threads=True, use_pandas_metadata=True
         ).to_pandas()
         if row_filter:
-            return df.query(row_filter)
+            df = df.query(row_filter)
+        if limit > 0:
+            df = df.head(limit)
+        if sample > 0:
+            df = df.sample(sample)
         return df
 
     def read_to_dict(
@@ -101,11 +122,29 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         source: str,
         columns: List[str] = None,
         row_filter: str = None,
-        drop_duplicates: bool = False,
         limit: int = -1,
         sample: int = -1,
+        drop_duplicates: bool = False,
     ) -> Dict[str, List]:
-        """Read a parquet dataset from disk into a dictionary of columns"""
+        """Read a parquet dataset from disk into a dictionary of columns
+
+        Args:
+            source: The path of the file or folder with a parquet dataset to read
+            columns: List of column names to limit the reading to
+            row_filter: NOT IMPLEMENTED. Reserved keyword for filtering rows.
+            limit: Maximum number of rows to return (top-n)
+            sample: Size of a random sample to return
+            drop_duplicates: Whether to drop duplicate rows
+
+        Returns:
+            A dictionary with column names as key and a list with column values as values
+
+        Raises:
+            NotImplementedError: If row_filter is given, because this is not yet implemented
+
+        The logic of the filtering arguments is as documented for
+        [`AbstractDataFrameReader.read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).
+        """
         full_path = self._validated_full_path(source)
         df = pq.read_table(
             str(full_path), columns=columns, use_threads=True, use_pandas_metadata=True
@@ -122,13 +161,13 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         Args:
             target: The path of the file or folder to write to. The path may be absolute
                 or relative to the base_path given in the
-                [`__init__`](#dframeio.parquet.ParquetBackend.__init__) function.
+                [`__init__()`](dframeio.parquet.ParquetBackend) function.
             dataframe: The data to write as pandas.DataFrame or as a Python dictionary
                 in the format `column_name: [column_data]`
 
         Raises:
              ValueError: If the dataframe does not contain the columns to partition by
-                as specified in the [`__init__`](#dframeio.parquet.ParquetBackend.__init__)
+                as specified in the [`__init__()`](dframeio.parquet.ParquetBackend)
                 function.
         """
         full_path = self._validated_full_path(target)
@@ -198,7 +237,8 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
     def _validated_full_path(self, path: Union[str, Path]) -> Path:
         """Make sure the given path is in self._base_path and return the full path
 
-        Returns: The full path as pathlib object
+        Returns:
+            The full path as pathlib object
 
         Raises:
             ValueError: If the path is not in the base path
