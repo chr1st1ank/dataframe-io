@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>dframeio.parquet - dataframe-io</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="//use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet" />
+  <link href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css" rel="stylesheet" />
+  <link href="../../css/mkapi-common.css" rel="stylesheet" />
+  <link href="../../css/mkapi-readthedocs.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "dframeio.parquet";
+    var mkdocs_page_input_path = "api/dframeio.parquet.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> dataframe-io</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../installation/">Installation</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../usage/">Usage</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">API documentation</span></p>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="#">dframeio</a>
+    <ul class="current">
+                <li class="toctree-l2"><a class="reference internal" href="../dframeio/">dframeio</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="./">dframeio.parquet</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#dframeioparquetparquetbackend">ParquetBackend</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#dframeioparquetparquetbackendread_to_pandas">read_to_pandas</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#dframeioparquetparquetbackendread_to_dict">read_to_dict</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#dframeioparquetparquetbackendwrite_replace">write_replace</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#dframeioparquetparquetbackendwrite_append">write_append</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../dframeio.abstract/">dframeio.abstract</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../contributing/">Contributing</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">dataframe-io</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>dframeio &raquo;</li>
+        
+      
+        
+          <li>API documentation &raquo;</li>
+        
+      
+    
+    <li>dframeio.parquet</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/chr1st1ank/dframeio/edit/master/docs/api/dframeio.parquet.md"> Edit on dframeio</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <div class="mkapi-node" id="dframeio.parquet">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object module plain top">
+    <div class="mkapi-object-kind module top">module</div>
+    <h1 id="dframeioparquet" class="mkapi-object-body module top"><span class="mkapi-object-prefix">dframeio.</span><span class="mkapi-object-name">parquet</span></h1>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/dframeio.parquet/#dframeio.parquet" title="Source for dframeio.parquet">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Implementation to access parquet datasets using pyarrow.</p></div>
+    </div>
+  <div class="mkapi-section classes">
+      <div class="mkapi-section-name classes">
+          <span class="mkapi-section-name-body classes">Classes</span> 
+        </div>
+      <div class="mkapi-section-body classes"><ul class="mkapi-items">
+<li class="class"><code class="mkapi-item-name"><a href="#dframeio.parquet.ParquetBackend">ParquetBackend</a></code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Backend to read and write parquet datasets<a class="mkapi-src-link" href="../source/dframeio.parquet/#dframeio.parquet.ParquetBackend" title="Source for dframeio.parquet.ParquetBackend">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="dframeio.parquet.ParquetBackend">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object class code top">
+    <div class="mkapi-object-kind class top">class</div>
+    <h2 id="dframeioparquetparquetbackend" class="mkapi-object-body class top"><code class="mkapi-object-prefix">dframeio.parquet.</code><code class="mkapi-object-name">ParquetBackend</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">base_path</code>, <code class="mkapi-object-signature">partitions=None</code>, <code class="mkapi-object-signature">rows_per_file=0</code><code class="mkapi-object-parenthesis">)</code></h2>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/dframeio.parquet/#dframeio.parquet.ParquetBackend" title="Source for dframeio.parquet.ParquetBackend">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section bases">
+      <div class="mkapi-section-name bases">
+          <span class="mkapi-section-name-body bases">Bases</span> 
+        </div>
+      <div class="mkapi-section-body bases">
+<span class="mkapi-base"><a href="../dframeio.abstract/#dframeio.abstract.AbstractDataFrameReader">dframeio.abstract.AbstractDataFrameReader</a></span>
+
+<span class="mkapi-base"><a href="../dframeio.abstract/#dframeio.abstract.AbstractDataFrameWriter">dframeio.abstract.AbstractDataFrameWriter</a></span>
+</div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Backend to read and write parquet datasets</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+
+<li><code class="mkapi-item-name">partitions</code>
+<span class="mkapi-item-type">(iterable of str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">(For writing only) Columns to use for partitioning.
+If given, the write functions split the data into a parquet dataset.
+Subfolders with the following naming schema are created when writing:
+<code>column_name=value</code>.<br>
+Per default data is written as a single file.<br>
+Cannot be combined with rows_per_file.</span></li>
+
+<li><code class="mkapi-item-name">rows_per_file</code>
+<span class="mkapi-item-type">(int, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">(For writing only) If a positive integer value is given
+this specifies the desired number of rows per file. The data is then
+written to multiple files.<br>
+Per default data is written as a single file.<br>
+Cannot be combined with partitions.</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section raises">
+      <div class="mkapi-section-name raises">
+          <span class="mkapi-section-name-body raises">Raises</span> 
+        </div>
+      <div class="mkapi-section-body raises"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">TypeError</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">If any of the input arguments has a diffent type as documented</span></li>
+
+<li><code class="mkapi-item-name">ValueError</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">If any of the input arguments are outside of the documented
+value ranges or if conflicting arguments are given.</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section methods">
+      <div class="mkapi-section-name methods">
+          <span class="mkapi-section-name-body methods">Methods</span> 
+        </div>
+      <div class="mkapi-section-body methods"><ul class="mkapi-items">
+<li class="method"><code class="mkapi-item-name"><a href="#dframeio.parquet.ParquetBackend.read_to_dict">read_to_dict</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">source</code>, <code class="mkapi-object-signature">columns</code>, <code class="mkapi-object-signature">row_filter</code>, <code class="mkapi-object-signature">limit</code>, <code class="mkapi-object-signature">sample</code>, <code class="mkapi-object-signature">drop_duplicates</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(dict(str: ))</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Read a parquet dataset from disk into a dictionary of columns<a class="mkapi-src-link" href="../source/dframeio.parquet/#dframeio.parquet.ParquetBackend.read_to_dict" title="Source for dframeio.parquet.ParquetBackend.read_to_dict">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#dframeio.parquet.ParquetBackend.read_to_pandas">read_to_pandas</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">source</code>, <code class="mkapi-object-signature">columns</code>, <code class="mkapi-object-signature">row_filter</code>, <code class="mkapi-object-signature">limit</code>, <code class="mkapi-object-signature">sample</code>, <code class="mkapi-object-signature">drop_duplicates</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(DataFrame)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Read a parquet dataset from disk into a pandas DataFrame<a class="mkapi-src-link" href="../source/dframeio.parquet/#dframeio.parquet.ParquetBackend.read_to_pandas" title="Source for dframeio.parquet.ParquetBackend.read_to_pandas">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#dframeio.parquet.ParquetBackend.write_append">write_append</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">target</code>, <code class="mkapi-object-signature">dataframe</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Write data in append-mode<a class="mkapi-src-link" href="../source/dframeio.parquet/#dframeio.parquet.ParquetBackend.write_append" title="Source for dframeio.parquet.ParquetBackend.write_append">&lt;/&gt;</a></span></li>
+
+<li class="method"><code class="mkapi-item-name"><a href="#dframeio.parquet.ParquetBackend.write_replace">write_replace</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">target</code>, <code class="mkapi-object-signature">dataframe</code><code class="mkapi-object-parenthesis">)</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Write data with full replacement of an existing dataset<a class="mkapi-src-link" href="../source/dframeio.parquet/#dframeio.parquet.ParquetBackend.write_replace" title="Source for dframeio.parquet.ParquetBackend.write_replace">&lt;/&gt;</a></span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+  <div class="mkapi-members">
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="dframeio.parquet.ParquetBackend.read_to_pandas">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="dframeioparquetparquetbackendread_to_pandas" class="mkapi-object-body method"><code class="mkapi-object-name">read_to_pandas</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">source</code>, <code class="mkapi-object-signature">columns=None</code>, <code class="mkapi-object-signature">row_filter=None</code>, <code class="mkapi-object-signature">limit=-1</code>, <code class="mkapi-object-signature">sample=-1</code>, <code class="mkapi-object-signature">drop_duplicates=False</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/dframeio.parquet/#dframeio.parquet.ParquetBackend.read_to_pandas" title="Source for dframeio.parquet.ParquetBackend.read_to_pandas">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Read a parquet dataset from disk into a pandas DataFrame</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">source</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The path of the file or folder with a parquet dataset to read</span></li>
+
+<li><code class="mkapi-item-name">columns</code>
+<span class="mkapi-item-type">(list of str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">List of column names to limit the reading to</span></li>
+
+<li><code class="mkapi-item-name">row_filter</code>
+<span class="mkapi-item-type">(str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Filter expression for selecting rows.</span></li>
+
+<li><code class="mkapi-item-name">limit</code>
+<span class="mkapi-item-type">(int, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Maximum number of rows to return (top-n)</span></li>
+
+<li><code class="mkapi-item-name">sample</code>
+<span class="mkapi-item-type">(int, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Size of a random sample to return</span></li>
+
+<li><code class="mkapi-item-name">drop_duplicates</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Whether to drop duplicate rows from the final selection</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(DataFrame)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>A pandas DataFrame with the requested data.</p></div>
+    </div>
+  <div class="mkapi-section raises">
+      <div class="mkapi-section-name raises">
+          <span class="mkapi-section-name-body raises">Raises</span> 
+        </div>
+      <div class="mkapi-section-body raises"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">ValueError</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">If path specified with <code>source</code> is outside of the base path</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>The logic of the filtering arguments is as documented for
+<a href="../dframeio.abstract/#dframeio.abstract.AbstractDataFrameReader.read_to_pandas"><code>AbstractDataFrameReader.read_to_pandas()</code></a>.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="dframeio.parquet.ParquetBackend.read_to_dict">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="dframeioparquetparquetbackendread_to_dict" class="mkapi-object-body method"><code class="mkapi-object-name">read_to_dict</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">source</code>, <code class="mkapi-object-signature">columns=None</code>, <code class="mkapi-object-signature">row_filter=None</code>, <code class="mkapi-object-signature">limit=-1</code>, <code class="mkapi-object-signature">sample=-1</code>, <code class="mkapi-object-signature">drop_duplicates=False</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/dframeio.parquet/#dframeio.parquet.ParquetBackend.read_to_dict" title="Source for dframeio.parquet.ParquetBackend.read_to_dict">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Read a parquet dataset from disk into a dictionary of columns</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">source</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The path of the file or folder with a parquet dataset to read</span></li>
+
+<li><code class="mkapi-item-name">columns</code>
+<span class="mkapi-item-type">(list of str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">List of column names to limit the reading to</span></li>
+
+<li><code class="mkapi-item-name">row_filter</code>
+<span class="mkapi-item-type">(str, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">NOT IMPLEMENTED. Reserved keyword for filtering rows.</span></li>
+
+<li><code class="mkapi-item-name">limit</code>
+<span class="mkapi-item-type">(int, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Maximum number of rows to return (top-n)</span></li>
+
+<li><code class="mkapi-item-name">sample</code>
+<span class="mkapi-item-type">(int, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Size of a random sample to return</span></li>
+
+<li><code class="mkapi-item-name">drop_duplicates</code>
+<span class="mkapi-item-type">(bool, optional)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Whether to drop duplicate rows</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(dict(str: ))</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>A dictionary with column names as key and a list with column values as values</p></div>
+    </div>
+  <div class="mkapi-section raises">
+      <div class="mkapi-section-name raises">
+          <span class="mkapi-section-name-body raises">Raises</span> 
+        </div>
+      <div class="mkapi-section-body raises"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">NotImplementedError</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">If row_filter is given, because this is not yet implemented</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section">
+      <div class="mkapi-section-body"><p>The logic of the filtering arguments is as documented for
+<a href="../dframeio.abstract/#dframeio.abstract.AbstractDataFrameReader.read_to_pandas"><code>AbstractDataFrameReader.read_to_pandas()</code></a>.</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="dframeio.parquet.ParquetBackend.write_replace">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="dframeioparquetparquetbackendwrite_replace" class="mkapi-object-body method"><code class="mkapi-object-name">write_replace</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">target</code>, <code class="mkapi-object-signature">dataframe</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/dframeio.parquet/#dframeio.parquet.ParquetBackend.write_replace" title="Source for dframeio.parquet.ParquetBackend.write_replace">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Write data with full replacement of an existing dataset</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">target</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The path of the file or folder to write to. The path may be absolute
+or relative to the base_path given in the
+<a href="./#dframeio.parquet.ParquetBackend"><code>__init__()</code></a> function.</span></li>
+
+<li><code class="mkapi-item-name">dataframe</code>
+<span class="mkapi-item-type">(Union(dataframe, dict(str: )))</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">The data to write as pandas.DataFrame or as a Python dictionary
+in the format <code>column_name: [column_data]</code></span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section raises">
+      <div class="mkapi-section-name raises">
+          <span class="mkapi-section-name-body raises">Raises</span> 
+        </div>
+      <div class="mkapi-section-body raises"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">ValueError</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">If the dataframe does not contain the columns to partition by
+as specified in the <a href="./#dframeio.parquet.ParquetBackend"><code>__init__()</code></a>
+function.</span></li>
+
+
+</ul></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+    <div class="mkapi-member">
+      <div class="mkapi-node" id="dframeio.parquet.ParquetBackend.write_append">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object method code">
+    <div class="mkapi-object-kind method">method</div>
+    <h3 id="dframeioparquetparquetbackendwrite_append" class="mkapi-object-body method"><code class="mkapi-object-name">write_append</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">target</code>, <code class="mkapi-object-signature">dataframe</code><code class="mkapi-object-parenthesis">)</code></h3>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/dframeio.parquet/#dframeio.parquet.ParquetBackend.write_append" title="Source for dframeio.parquet.ParquetBackend.write_append">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Write data in append-mode</p></div>
+    </div>
+  </div>
+
+</div>
+    </div>
+  
+  </div>
+
+</div>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../dframeio.abstract/" class="btn btn-neutral float-right" title="dframeio.abstract">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../dframeio/" class="btn btn-neutral" title="dframeio"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../dframeio/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../dframeio.abstract/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../js/mkapi.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

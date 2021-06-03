@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../../img/favicon.ico">
+  <title>dframeio.abstract - dataframe-io</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../../css/theme.css" />
+  <link rel="stylesheet" href="../../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="//use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet" />
+  <link href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css" rel="stylesheet" />
+  <link href="../../../css/mkapi-common.css" rel="stylesheet" />
+  <link href="../../../css/mkapi-readthedocs.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "dframeio.abstract";
+    var mkdocs_page_input_path = "api/source/dframeio.abstract.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../../.." class="icon icon-home"> dataframe-io</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../installation/">Installation</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../usage/">Usage</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">API documentation</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">dframeio</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../dframeio/">dframeio</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../dframeio.parquet/">dframeio.parquet</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../dframeio.abstract/">dframeio.abstract</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../contributing/">Contributing</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../..">dataframe-io</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>dframeio.abstract</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/chr1st1ank/dframeio/edit/master/docs/api/source/dframeio.abstract.md"> Edit on dframeio</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <div class="mkapi-node">
+<h1 id="" class="mkapi-object mkapi-object-code plain">
+<span class="mkapi-object-kind mkapi-object-kind-code">SOURCE CODE</span>
+<span class="mkapi-object-prefix">dframeio.</span><span class="mkapi-object-name">abstract</span>
+<span id="dframeio.abstract"></span><a class="mkapi-docs-link" href="../../dframeio.abstract">DOCS</a>
+</h1>
+
+<div class="mkapi-code">
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Abstract interfaces for all storage backends&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">pd</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">class</span> <span class="nc">AbstractDataFrameReader</span><span class="p">:</span><span id="dframeio.abstract.AbstractDataFrameReader"></span><a class="mkapi-docs-link" title="dframeio.abstract.AbstractDataFrameReader" href="../../dframeio.abstract/#dframeio.abstract.AbstractDataFrameReader">DOCS</a>
+    <span class="sd">&quot;&quot;&quot;Interface for reading dataframes from different storage drivers&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span><span id="dframeio.abstract.AbstractDataFrameReader.read_to_pandas"></span><a class="mkapi-docs-link" title="dframeio.abstract.AbstractDataFrameReader.read_to_pandas" href="../../dframeio.abstract/#dframeio.abstract.AbstractDataFrameReader.read_to_pandas">DOCS</a>
+    <span class="k">def</span> <span class="nf">read_to_pandas</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">row_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">sample</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">drop_duplicates</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read data into a pandas.DataFrame</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            source: A string specifying the data source (format differs by backend)</span>
+<span class="sd">            columns: List of column names to limit the reading to</span>
+<span class="sd">            row_filter: Filter expression for selecting rows.</span>
+<span class="sd">            limit: Maximum number of rows to return (top-n)</span>
+<span class="sd">            sample: Size of a random sample to return</span>
+<span class="sd">            drop_duplicates: Whether to drop duplicate rows from the final selection</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A pandas DataFrame with the requested data.</span>
+
+<span class="sd">        The filter and limit arguments are applied in the following order:</span>
+
+<span class="sd">        - first the `row_filter` expression is applied and all matching rows go into the next step,</span>
+<span class="sd">        - afterwards the `limit` argument is applied if given,</span>
+<span class="sd">        - in the next step the `sample` argument is applied if it is specified,</span>
+<span class="sd">        - at the very end `drop_duplicates` takes effect. This means that this flag may reduce</span>
+<span class="sd">          the output size further and that fewer rows may be returned as specified with `limit`</span>
+<span class="sd">          or `sample` if there are duplicates in the data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="nd">@abstractmethod</span><span id="dframeio.abstract.AbstractDataFrameReader.read_to_dict"></span><a class="mkapi-docs-link" title="dframeio.abstract.AbstractDataFrameReader.read_to_dict" href="../../dframeio.abstract/#dframeio.abstract.AbstractDataFrameReader.read_to_dict">DOCS</a>
+    <span class="k">def</span> <span class="nf">read_to_dict</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">row_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">sample</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">drop_duplicates</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Read data into a dict of named columns</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            source: A string specifying the data source (format differs by backend)</span>
+<span class="sd">            columns: List of column names to limit the reading to</span>
+<span class="sd">            row_filter: NOT IMPLEMENTED. Reserved keyword for filtering rows.</span>
+<span class="sd">            limit: Maximum number of rows to return (top-n)</span>
+<span class="sd">            sample: Size of a random sample to return</span>
+<span class="sd">            drop_duplicates: Whether to drop duplicate rows</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary with column names as key and a list with column values as values</span>
+
+<span class="sd">        The logic of the filtering arguments is as documented for</span>
+<span class="sd">        [`read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">AbstractDataFrameWriter</span><span class="p">:</span><span id="dframeio.abstract.AbstractDataFrameWriter"></span><a class="mkapi-docs-link" title="dframeio.abstract.AbstractDataFrameWriter" href="../../dframeio.abstract/#dframeio.abstract.AbstractDataFrameWriter">DOCS</a>
+    <span class="sd">&quot;&quot;&quot;Interface for writing dataframes to different storage drivers&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span><span id="dframeio.abstract.AbstractDataFrameWriter.write_replace"></span><a class="mkapi-docs-link" title="dframeio.abstract.AbstractDataFrameWriter.write_replace" href="../../dframeio.abstract/#dframeio.abstract.AbstractDataFrameWriter.write_replace">DOCS</a>
+    <span class="k">def</span> <span class="nf">write_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]]):</span>
+        <span class="sd">&quot;&quot;&quot;Write data with full replacement of an existing dataset&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="nd">@abstractmethod</span><span id="dframeio.abstract.AbstractDataFrameWriter.write_append"></span><a class="mkapi-docs-link" title="dframeio.abstract.AbstractDataFrameWriter.write_append" href="../../dframeio.abstract/#dframeio.abstract.AbstractDataFrameWriter.write_append">DOCS</a>
+    <span class="k">def</span> <span class="nf">write_append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]]):</span>
+        <span class="sd">&quot;&quot;&quot;Write data in append-mode&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+</code></pre></div>
+</div>
+</div>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+      
+    </span>
+</div>
+    <script>var base_url = '../../..';</script>
+    <script src="../../../js/theme.js" defer></script>
+      <script src="../../../js/mkapi.js" defer></script>
+      <script src="../../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
