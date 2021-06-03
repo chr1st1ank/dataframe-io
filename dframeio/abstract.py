@@ -69,7 +69,7 @@ class AbstractDataFrameReader:
             A dictionary with column names as key and a list with column values as values
 
         The logic of the filtering arguments is as documented for
-        [`read_to_pandas`](#dframeio.abstract.AbstractDataFrameReader.read_to_pandas).
+        [`read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).
         """
         raise NotImplementedError()
 

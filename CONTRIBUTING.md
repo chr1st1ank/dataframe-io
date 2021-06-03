@@ -99,11 +99,6 @@ Before you submit a pull request, check that it meets these guidelines:
    https://github.com/chr1st1ank/dframeio/actions
    and make sure that the tests pass for all supported Python versions.
 
-## Tips```
-    $ pytest tests.test_dframeio
-```To run a subset of tests.
-
-
 ## Deploying
 
 A reminder for the maintainers on how to deploy.
