@@ -16,7 +16,6 @@ markdown_extensions:
   - toc:
       baselevel: 1
       permalink: true
-      slugify: !!python/name:pymdownx.slugs.uslugify
   - meta
 plugins:
   - include-markdown

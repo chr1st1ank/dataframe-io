@@ -20,17 +20,6 @@ typed-ast = {version = ">=1.4.0,<1.5", markers = "implementation_name == \"cpyth
 wrapt = ">=1.11,<1.13"
 
 [[package]]
-name = "astunparse"
-version = "1.6.3"
-description = "An AST unparser for Python"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-six = ">=1.6.1,<2.0"
-
-[[package]]
 name = "atomicwrites"
 version = "1.4.0"
 description = "Atomic file writes."
@@ -88,14 +77,6 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 packaging = "*"
 six = ">=1.9.0"
 webencodings = "*"
-
-[[package]]
-name = "cached-property"
-version = "1.5.2"
-description = "A decorator for caching properties in classes."
-category = "dev"
-optional = false
-python-versions = "*"
 
 [[package]]
 name = "certifi"
@@ -478,49 +459,6 @@ dev = ["bump2version (==1.0.1)", "flake8 (==3.9.1)", "flake8-implicit-str-concat
 test = ["pytest (==6.2.3)", "pytest-cov (==2.11.1)"]
 
 [[package]]
-name = "mkdocs-material"
-version = "7.1.6"
-description = "A Material Design theme for MkDocs"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-markdown = ">=3.2"
-mkdocs = ">=1.1"
-mkdocs-material-extensions = ">=1.0"
-Pygments = ">=2.4"
-pymdown-extensions = ">=7.0"
-
-[[package]]
-name = "mkdocs-material-extensions"
-version = "1.0.1"
-description = "Extension pack for Python Markdown."
-category = "dev"
-optional = false
-python-versions = ">=3.5"
-
-[package.dependencies]
-mkdocs-material = ">=5.0.0"
-
-[[package]]
-name = "mkdocstrings"
-version = "0.15.1"
-description = "Automatic documentation from sources, for MkDocs."
-category = "dev"
-optional = false
-python-versions = ">=3.6,<4.0"
-
-[package.dependencies]
-Jinja2 = ">=2.11.1,<4.0"
-Markdown = ">=3.3,<4.0"
-MarkupSafe = ">=1.1,<3.0"
-mkdocs = ">=1.1,<2.0"
-mkdocs-autorefs = ">=0.1,<0.3"
-pymdown-extensions = ">=6.3,<9.0"
-pytkdocs = ">=0.2.0,<0.12.0"
-
-[[package]]
 name = "mypy-extensions"
 version = "0.4.3"
 description = "Experimental type system extensions for programs checked with the mypy typechecker."
@@ -758,17 +696,6 @@ junit-xml-2 = "*"
 pylint = "*"
 
 [[package]]
-name = "pymdown-extensions"
-version = "8.2"
-description = "Extension pack for Python Markdown."
-category = "dev"
-optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-Markdown = ">=3.2"
-
-[[package]]
 name = "pyparsing"
 version = "2.4.7"
 description = "Python parsing module"
@@ -824,22 +751,6 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 
 [package.dependencies]
 six = ">=1.5"
-
-[[package]]
-name = "pytkdocs"
-version = "0.11.1"
-description = "Load Python objects documentation."
-category = "dev"
-optional = false
-python-versions = ">=3.6.1,<4.0.0"
-
-[package.dependencies]
-astunparse = {version = ">=1.6.3,<2.0.0", markers = "python_version < \"3.9\""}
-cached-property = {version = ">=1.5.2,<2.0.0", markers = "python_version < \"3.8\""}
-typing-extensions = {version = ">=3.7.4.3,<4.0.0.0", markers = "python_version < \"3.8\""}
-
-[package.extras]
-numpy-style = ["docstring_parser (>=0.7.3,<0.8.0)"]
 
 [[package]]
 name = "pytz"
@@ -1138,7 +1049,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7.1,<4.0"
-content-hash = "a9fb0bec5413ab2726132e788eadcb54aeea1e9d617a719d0b1c80d450a9945f"
+content-hash = "f7ba82703c3dc0c73756788dd303ace1b59eeda86b17b1d77eeeee4e90914339"
 
 [metadata.files]
 appdirs = [
@@ -1148,10 +1059,6 @@ appdirs = [
 astroid = [
     {file = "astroid-2.5.6-py3-none-any.whl", hash = "sha256:4db03ab5fc3340cf619dbc25e42c2cc3755154ce6009469766d7143d1fc2ee4e"},
     {file = "astroid-2.5.6.tar.gz", hash = "sha256:8a398dfce302c13f14bab13e2b14fe385d32b73f4e4853b9bdfb64598baa1975"},
-]
-astunparse = [
-    {file = "astunparse-1.6.3-py2.py3-none-any.whl", hash = "sha256:c2652417f2c8b5bb325c885ae329bdf3f86424075c4fd1a128674bc6fba4b8e8"},
-    {file = "astunparse-1.6.3.tar.gz", hash = "sha256:5ad93a8456f0d084c3456d059fd9a92cce667963232cbf763eac3bc5b7940872"},
 ]
 atomicwrites = [
     {file = "atomicwrites-1.4.0-py2.py3-none-any.whl", hash = "sha256:6d1784dea7c0c8d4a5172b6c620f40b6e4cbfdf96d783691f2e1302a7b88e197"},
@@ -1168,10 +1075,6 @@ black = [
 bleach = [
     {file = "bleach-3.3.0-py2.py3-none-any.whl", hash = "sha256:6123ddc1052673e52bab52cdc955bcb57a015264a1c57d37bea2f6b817af0125"},
     {file = "bleach-3.3.0.tar.gz", hash = "sha256:98b3170739e5e83dd9dc19633f074727ad848cbedb6026708c8ac2d3b697a433"},
-]
-cached-property = [
-    {file = "cached-property-1.5.2.tar.gz", hash = "sha256:9fa5755838eecbb2d234c3aa390bd80fbd3ac6b6869109bfc1b499f7bd89a130"},
-    {file = "cached_property-1.5.2-py2.py3-none-any.whl", hash = "sha256:df4f613cf7ad9a588cc381aaf4a512d26265ecebd5eb9e1ba12f1319eb85a6a0"},
 ]
 certifi = [
     {file = "certifi-2021.5.30-py2.py3-none-any.whl", hash = "sha256:50b1e4f8446b06f41be7dd6338db18e0990601dce795c2b1686458aa7e8fa7d8"},
@@ -1466,18 +1369,6 @@ mkdocs-include-markdown-plugin = [
     {file = "mkdocs_include_markdown_plugin-3.0.1-py3-none-any.whl", hash = "sha256:27dde0d576c97d7c239a5f689069b5edc1fa67d5ceec609feb7adca3b4c1b630"},
     {file = "mkdocs_include_markdown_plugin-3.0.1.tar.gz", hash = "sha256:cf6fb03ab2a7f8bf2c76f06b866ed68331052268748f6dcc84638b7790bdbacd"},
 ]
-mkdocs-material = [
-    {file = "mkdocs-material-7.1.6.tar.gz", hash = "sha256:b3f1aaea3e79e3c3b30babe0238915cf4ad4c4560d404bb0ac3298ee2ce004a3"},
-    {file = "mkdocs_material-7.1.6-py2.py3-none-any.whl", hash = "sha256:01566c460990dad54d6ec935553b9c5c8e4e753ac3e30ba0945ceeff4ad164ac"},
-]
-mkdocs-material-extensions = [
-    {file = "mkdocs-material-extensions-1.0.1.tar.gz", hash = "sha256:6947fb7f5e4291e3c61405bad3539d81e0b3cd62ae0d66ced018128af509c68f"},
-    {file = "mkdocs_material_extensions-1.0.1-py3-none-any.whl", hash = "sha256:d90c807a88348aa6d1805657ec5c0b2d8d609c110e62b9dce4daf7fa981fa338"},
-]
-mkdocstrings = [
-    {file = "mkdocstrings-0.15.1-py3-none-any.whl", hash = "sha256:e5ee5c4199bad77d6f6d6a7e6771ad796bb3cd81ea2dc984bdf4773a9944ac7e"},
-    {file = "mkdocstrings-0.15.1.tar.gz", hash = "sha256:32d10df8a38c133772fd322008cd531831aac7ea7fc40a6831d696a262c1659e"},
-]
 mypy-extensions = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
@@ -1616,10 +1507,6 @@ pylint = [
 pylint-junit = [
     {file = "pylint_junit-0.3.2.tar.gz", hash = "sha256:c6dbe956e55bb9b365d86e2ec77b58df6b95262b5515d187ac54b8359507174b"},
 ]
-pymdown-extensions = [
-    {file = "pymdown-extensions-8.2.tar.gz", hash = "sha256:b6daa94aad9e1310f9c64c8b1f01e4ce82937ab7eb53bfc92876a97aca02a6f4"},
-    {file = "pymdown_extensions-8.2-py3-none-any.whl", hash = "sha256:141452d8ed61165518f2c923454bf054866b85cf466feedb0eb68f04acdc2560"},
-]
 pyparsing = [
     {file = "pyparsing-2.4.7-py2.py3-none-any.whl", hash = "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"},
     {file = "pyparsing-2.4.7.tar.gz", hash = "sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1"},
@@ -1635,10 +1522,6 @@ pytest-cov = [
 python-dateutil = [
     {file = "python-dateutil-2.8.1.tar.gz", hash = "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c"},
     {file = "python_dateutil-2.8.1-py2.py3-none-any.whl", hash = "sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a"},
-]
-pytkdocs = [
-    {file = "pytkdocs-0.11.1-py3-none-any.whl", hash = "sha256:89ca4926d0acc266235beb24cb0b0591aa6bf7adedfae54bf9421d529d782c8d"},
-    {file = "pytkdocs-0.11.1.tar.gz", hash = "sha256:1ec7e028fe8361acc1ce909ada4e6beabec28ef31e629618549109e1d58549f0"},
 ]
 pytz = [
     {file = "pytz-2021.1-py2.py3-none-any.whl", hash = "sha256:eb10ce3e7736052ed3623d49975ce333bcd712c7bb19a58b9e2089d4057d0798"},
