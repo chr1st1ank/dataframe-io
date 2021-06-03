@@ -28,7 +28,7 @@ $ git clone git://github.com/chr1st1ank/dframeio
 Or download the [tarball][]:
 
 ``` console
-$ curl -OJL https://github.com/chr1st1ank/dframeio/tarball/master
+$ curl -OJL https://github.com/chr1st1ank/dframeio/tarball/main
 ```
 
 Once you have a copy of the source, you can install it with:
