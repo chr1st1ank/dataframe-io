@@ -104,8 +104,8 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
             raise ValueError(
                 f"The given source path {source} is not in base_path {self._base_path}!"
             )
-        # TODO: use read_pandas()
-        #   https://arrow.apache.org/docs/python/generated/pyarrow.parquet.read_pandas.html#pyarrow.parquet.read_pandas
+        if row_filter:
+            raise NotImplementedError()
         df = pq.read_table(
             str(full_path), columns=columns, use_threads=True, use_pandas_metadata=True
         ).to_pandas()

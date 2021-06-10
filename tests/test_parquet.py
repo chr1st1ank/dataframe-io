@@ -14,7 +14,7 @@ class SampleDataSchema(pa.SchemaModel):
     """pandera schema of the parquet test dataset"""
 
     registration_dttm: pa.typing.Series[pa.typing.DateTime]
-    id: pa.typing.Series[pa.typing.Float64] = pa.Field(nullable=True)
+    id: pa.typing.Series[pa.typing.Int] = pa.Field(nullable=True)
     first_name: pa.typing.Series[pa.typing.String]
     last_name: pa.typing.Series[pa.typing.String]
     email: pa.typing.Series[pa.typing.String]
