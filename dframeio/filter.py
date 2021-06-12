@@ -1,24 +1,25 @@
 """Filter expressions for predicate pushdown"""
-import logging
-from typing import Type
+from dataclasses import dataclass
+from typing import List, Tuple, Type, Union
 
 import lark
 
 # See SQL 2003 working draft http://www.wiscorp.com/sql20nn.zip (Part 2, section 6.35)
 lark_grammar = r"""
-    ?predicate: "(" predicate ")"
-        | boolean_value_exp
     ?boolean_value_exp: boolean_term
         | boolean_value_exp "OR"i boolean_term -> or_operation
     ?boolean_term: boolean_factor
         | boolean_term "AND"i boolean_factor -> and_operation
-    ?boolean_factor: single_condition
+    ?boolean_factor:  "(" boolean_value_exp ")"
+        | single_condition
         | "NOT" single_condition -> negation
     ?single_condition: comparison
         | null_comparison
+        | notin_list
         | in_list
     comparison: columnname BINOP column_rval
     null_comparison: columnname (ISNULL | NOTNULL)
+    notin_list: columnname NOTIN literal_list
     in_list: columnname "IN"i literal_list
     literal_list: ("(") literal ("," literal)* (")")
     ?literal: SIGNED_NUMBER | ESCAPED_STRING
@@ -30,6 +31,7 @@ lark_grammar = r"""
 
     ISNULL.9: /IS\s+NULL/i
     NOTNULL.10: /IS\s+NOT\s+NULL/i
+    NOTIN.10: /NOT\s+IN/i
     NOT.9: "NOT"i
     UNQUOTED_COLUMNNAME.1: NAMECHAR+ ("." + NAMECHAR+)*
     NAMECHAR: "_"|"$"|LETTER|DIGIT
@@ -52,6 +54,16 @@ lark_grammar = r"""
 """
 
 
+def _make_parser(transformer: Type[lark.Transformer]):
+    return lark.Lark(
+        lark_grammar,
+        start="boolean_value_exp",
+        lexer="standard",
+        parser="lalr",
+        transformer=transformer,
+    )
+
+
 class BaseTransformer(lark.Transformer):
     def SIGNED_NUMBER(self, tok):
         """Convert the value of `tok` from string to number"""
@@ -65,7 +77,7 @@ class BaseTransformer(lark.Transformer):
         return tok.update(value=tok[1:-1])
 
 
-class PrefixNotationTransformer(lark.Transformer):
+class _PrefixNotationTransformer(lark.Transformer):
     def and_operation(self, operands: lark.Token):
         return self.format_operation("AND", *operands)
 
@@ -87,6 +99,10 @@ class PrefixNotationTransformer(lark.Transformer):
     @lark.v_args(inline=True)
     def negation(self, operand: lark.Token):
         return self.format_operation("NOT", operand)
+
+    @lark.v_args(inline=True)
+    def notin_list(self, column: lark.Token, notin: lark.Token, lst: lark.Token):
+        return self.format_operation("NOTIN", column, lst)
 
     @lark.v_args(inline=True)
     def in_list(self, column: lark.Token, lst: lark.Token):
@@ -114,18 +130,8 @@ class PrefixNotationTransformer(lark.Transformer):
         return f"({operator} {' '.join([o for o in operands])})"
 
 
-def _make_parser(transformer: Type[lark.Transformer]):
-    return lark.Lark(
-        lark_grammar,
-        start="predicate",
-        lexer="standard",
-        parser="lalr",
-        transformer=transformer,
-    )
-
-
 def to_prefix_notation(statement: str) -> str:
-    """Parse a filter statement and return it in prefix notation
+    """Parse a filter statement and return it in prefix notation.
 
     Args:
         statement: A filter predicate as string
@@ -133,44 +139,140 @@ def to_prefix_notation(statement: str) -> str:
     Returns:
         The filter statement in prefix notation (polish notation) as string
     """
-    parser = _make_parser(PrefixNotationTransformer())
+    parser = _make_parser(_PrefixNotationTransformer())
     return parser.parse(statement)
 
 
-if __name__ == "__main__":
+class _PyarrowDNFTransformer(lark.Transformer):
+    @dataclass
+    class Column:
+        name: str
 
-    examples = """\
-        a >0 and b <= 2
-        a in ('RED','GREEN','BLUE') and b in (10,20,30)
-        a in ('RED','GREEN','BLUE') and b.c in (10,20,30) OR d = 5
-        a in ('RED','GREEN','BLUE')
-        table1.id = table2.id
-        A > 5
-        `A` > 5
-        A >= 5
-        A < 5
-        A <= 5
-        A != 5
-        A IS NULL
-        A IS NOT NULL
-        A < B
-        A = "xyz"
-        NOT A > 5\
-        """.splitlines()
+    @dataclass
+    class Or:
+        operands: list
 
-    lark.logger.setLevel(logging.DEBUG)
-    p = lark.Lark(
-        lark_grammar,
-        start="predicate",
-        lexer="standard",
-        parser="lalr",
-        # transformer=BaseTransformer(),
-        debug=True,
-    )
-    for i, e in enumerate(reversed(examples)):
-        print(">> ", e)
-        parsed = p.parse(e)
-        print(parsed.pretty())
-        # tree.pydot__tree_to_png(parsed, f"sppf-{i}.png")
-        print(PrefixNotationTransformer().transform(parsed))
-        print("--")
+        def format(self) -> List[List[Tuple]]:
+            disjunction = []
+            for o in self.operands:
+                if isinstance(o, _PyarrowDNFTransformer.And):
+                    disjunction.append(o.format())
+                elif isinstance(o, _PyarrowDNFTransformer.Condition):
+                    disjunction.append([o.format()])
+                else:
+                    raise ValueError(
+                        "For PyArrow only disjunctions of conjunctions "
+                        "or simple conditions are allowed. "
+                        f"`{o}` is not a single condition nor a conjunction."
+                    )
+            return disjunction
+
+    @dataclass
+    class And:
+        operands: list
+
+        def format(self) -> List[Tuple]:
+            conjunction = []
+            for o in self.operands:
+                if isinstance(o, _PyarrowDNFTransformer.Condition):
+                    conjunction.append(o.format())
+                else:
+                    raise ValueError(
+                        "For PyArrow only conjunctions of simple conditions are allowed."
+                    )
+            return conjunction
+
+    @dataclass
+    class Condition:
+        key: str
+        operator: str
+        value: Union[str, int, float]
+
+        def format(self) -> Tuple:
+            if not isinstance(self.key, _PyarrowDNFTransformer.Column):
+                raise ValueError(
+                    "For pyarrow only comparisons of the form `key <operator> value`"
+                    "are allowed, where `key` must be a column name."
+                )
+            if not isinstance(self.value, (int, float, str, set)):
+                raise ValueError(
+                    "For pyarrow only comparisons of the form `key <operator> value` are allowed."
+                )
+            return self.key.name, self.operator, self.value
+
+    def and_operation(self, operands: lark.Token):
+        return _PyarrowDNFTransformer.And(list(operands))
+
+    def or_operation(self, operands: lark.Token):
+        return _PyarrowDNFTransformer.Or(list(operands))
+
+    @lark.v_args(inline=True)
+    def comparison(self, left: lark.Token, operator: lark.Token, right: lark.Token):
+        return _PyarrowDNFTransformer.Condition(left, operator.value, right)
+
+    @lark.v_args(inline=True)
+    def null_comparison(self, operand: lark.Token, operator: lark.Token):
+        if operator.type == "ISNULL":
+            return _PyarrowDNFTransformer.Condition(operand, "=", "null")
+        if operator.type == "NOTNULL":
+            return _PyarrowDNFTransformer.Condition(operand, "!=", "null")
+        raise lark.ParseError("Invalid NULL comparison")
+
+    def negation(self, _):
+        raise ValueError("Pyarrow doesn't support the `NOT` operator")
+
+    @lark.v_args(inline=True)
+    def notin_list(self, column: lark.Token, notin: lark.Token, lst: lark.Token):
+        return _PyarrowDNFTransformer.Condition(column, "not in", lst)
+
+    @lark.v_args(inline=True)
+    def in_list(self, column: lark.Token, lst: lark.Token):
+        return _PyarrowDNFTransformer.Condition(column, "in", lst)
+
+    def literal_list(self, members: lark.Token):
+        return set(members)
+
+    def UNQUOTED_COLUMNNAME(self, name: lark.Token):
+        return _PyarrowDNFTransformer.Column(name.value)
+
+    def ESCAPED_STRING(self, tok: lark.Token):
+        assert len(tok) > 1 and (tok[0] == tok[-1] == "'" or tok[0] == tok[-1] == '"')
+        return tok[1:-1]
+
+    def SIGNED_NUMBER(self, tok: lark.Token):
+        """Convert the value of `tok` from string to number"""
+        try:
+            return int(tok)
+        except ValueError:
+            return float(tok)
+
+
+def _raise_error(e: Exception):
+    raise e
+
+
+def to_pyarrow_dnf(statement: str) -> List[List[Tuple]]:
+    """Convert a filter statement to the disjunctive normal form understood by pyarrow
+
+    Predicates are expressed in disjunctive normal form (DNF), like `[[('x', '=', 0), ...], ...]`.
+    The outer list is understood as chain of disjunctions ("or"), every inner list as a chain
+    of conjunctions ("and"). The inner lists contain tuples with a single operation
+    in infix notation each.
+    More information about the format and its limitations can be found in the
+    [pyarrow documentation](https://arrow.apache.org/docs/python/generated/pyarrow.parquet.read_table.html#pyarrow-parquet-read-table).
+
+    Args:
+        statement: A filter predicate as string
+
+    Returns:
+        The filter statement in isjunctive normal form as list of lists of tuples.
+    """  # noqa: E501
+    parser = _make_parser(_PyarrowDNFTransformer())
+    predicate = parser.parse(statement, on_error=_raise_error)
+    if isinstance(predicate, _PyarrowDNFTransformer.Condition):
+        return [[predicate.format()]]
+    if isinstance(predicate, _PyarrowDNFTransformer.And):
+        return [predicate.format()]
+    if isinstance(predicate, _PyarrowDNFTransformer.Or):
+        return predicate.format()
+    RuntimeError("Invalid statement")
