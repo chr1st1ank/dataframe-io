@@ -1,8 +1,17 @@
 """Tests for dframeio.filter"""
+import doctest
 
 import pytest
 
 from dframeio import filter
+
+
+def test_doctest():
+    try:
+        doctest.testmod(filter, raise_on_error=True, verbose=True)
+    except doctest.DocTestFailure as f:
+        print(f"Got:\n    {f.got}")
+        assert f.example.want.strip() == f.got.strip(), "Doctest failed"
 
 
 @pytest.mark.parametrize(

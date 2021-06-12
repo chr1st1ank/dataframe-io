@@ -1,6 +1,27 @@
-"""Filter expressions for predicate pushdown"""
+"""Filter expressions for data reading operations with predicate pushdown.
+
+This module is responsible for translate filter expressions from a simplified SQL syntax
+into different formats understood by the various backends. This way the same language can
+be used to implement filtering regardless of the data source.
+
+The grammar of the filter statements is the same as in a WHERE clause in SQL. Supported
+features:
+
+  - Comparing column values to numbers, strings and another column's values using the operators
+    `> < = != >= <=`, e.g. `a.column < 5`
+  - Comparison against a set of values with ÌN and `NOT IN`, e.g. `a.column IN (1, 2, 3)`
+  - Boolean combination of conditions with `AND`, `OR` and `ǸOT`
+  - `NULL` comparison as in `a IS NULL` or `b IS NOT NULL`
+
+Strings can be quoted with single-quotes and double-quotes.
+Column names can but don't have to be quoted with SQL quotes (backticks). E.g.:
+
+```sql
+`a.column` = "abc" AND b IS NOT NULL OR index < 50
+```
+"""
 from dataclasses import dataclass
-from typing import List, Tuple, Type, Union
+from typing import Any, List, Tuple, Type, Union
 
 import lark
 
@@ -64,19 +85,6 @@ def _make_parser(transformer: Type[lark.Transformer]):
     )
 
 
-class BaseTransformer(lark.Transformer):
-    def SIGNED_NUMBER(self, tok):
-        """Convert the value of `tok` from string to number"""
-        try:
-            return tok.update(value=int(tok))
-        except ValueError:
-            return tok.update(value=float(tok))
-
-    def ESCAPED_STRING(self, tok):
-        assert len(tok) > 1 and (tok[0] == tok[-1] == "'" or tok[0] == tok[-1] == '"')
-        return tok.update(value=tok[1:-1])
-
-
 class _PrefixNotationTransformer(lark.Transformer):
     def and_operation(self, operands: lark.Token):
         return self.format_operation("AND", *operands)
@@ -138,6 +146,13 @@ def to_prefix_notation(statement: str) -> str:
 
     Returns:
         The filter statement in prefix notation (polish notation) as string
+
+    Examples:
+        >>> to_prefix_notation("a.column != 0")
+        '(!= Column<a.column> 0)'
+
+        >>> to_prefix_notation("a > 1 and b <= 3")
+        '(AND (> Column<a> 1) (<= Column<b> 3))'
     """
     parser = _make_parser(_PrefixNotationTransformer())
     return parser.parse(statement)
@@ -251,7 +266,7 @@ def _raise_error(e: Exception):
     raise e
 
 
-def to_pyarrow_dnf(statement: str) -> List[List[Tuple]]:
+def to_pyarrow_dnf(statement: str) -> List[List[Tuple[str, str, Any]]]:
     """Convert a filter statement to the disjunctive normal form understood by pyarrow
 
     Predicates are expressed in disjunctive normal form (DNF), like `[[('x', '=', 0), ...], ...]`.
@@ -265,7 +280,17 @@ def to_pyarrow_dnf(statement: str) -> List[List[Tuple]]:
         statement: A filter predicate as string
 
     Returns:
-        The filter statement in isjunctive normal form as list of lists of tuples.
+        The filter statement converted to a list of lists of tuples.
+
+    Examples:
+        >>> to_pyarrow_dnf("a.column != 0")
+        [[('a.column', '!=', 0)]]
+
+        >>> to_pyarrow_dnf("a > 1 and b <= 3")
+        [[('a', '>', 1), ('b', '<=', 3)]]
+
+        >>> to_pyarrow_dnf("a > 1 and b <= 3 or c = 'abc'")
+        [[('a', '>', 1), ('b', '<=', 3)], [('c', '=', 'abc')]]
     """  # noqa: E501
     parser = _make_parser(_PyarrowDNFTransformer())
     predicate = parser.parse(statement, on_error=_raise_error)
@@ -276,3 +301,16 @@ def to_pyarrow_dnf(statement: str) -> List[List[Tuple]]:
     if isinstance(predicate, _PyarrowDNFTransformer.Or):
         return predicate.format()
     RuntimeError("Invalid statement")
+
+
+class _SQLTransformer(lark.Transformer):
+    def SIGNED_NUMBER(self, tok):
+        """Convert the value of `tok` from string to number"""
+        try:
+            return tok.update(value=int(tok))
+        except ValueError:
+            return tok.update(value=float(tok))
+
+    def ESCAPED_STRING(self, tok):
+        assert len(tok) > 1 and (tok[0] == tok[-1] == "'" or tok[0] == tok[-1] == '"')
+        return tok.update(value=tok[1:-1])
