@@ -119,6 +119,7 @@ disable = [
     "fixme", # Creates warnings for todo items
     "no-else-return", # Creates refactor result for indented else block; which however might be more readable
     "duplicate-code", # Unfortunately this gives alerts also for identical function signatures
+    "line-too-long", # Checked already by flake8
 ]
 
 [tool.pylint.design]

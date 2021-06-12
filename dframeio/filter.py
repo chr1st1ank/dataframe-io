@@ -86,6 +86,9 @@ def _make_parser(transformer: Type[lark.Transformer]):
 
 
 class _PrefixNotationTransformer(lark.Transformer):
+    """lark.Transformer to translate to polish/prefix notation"""
+
+    # pylint: disable=missing-function-docstring,no-self-use
     def and_operation(self, operands: lark.Token):
         return self.format_operation("AND", *operands)
 
@@ -109,7 +112,7 @@ class _PrefixNotationTransformer(lark.Transformer):
         return self.format_operation("NOT", operand)
 
     @lark.v_args(inline=True)
-    def notin_list(self, column: lark.Token, notin: lark.Token, lst: lark.Token):
+    def notin_list(self, column: lark.Token, _: lark.Token, lst: lark.Token):
         return self.format_operation("NOTIN", column, lst)
 
     @lark.v_args(inline=True)
@@ -135,7 +138,7 @@ class _PrefixNotationTransformer(lark.Transformer):
 
     @staticmethod
     def format_operation(operator, *operands):
-        return f"({operator} {' '.join([o for o in operands])})"
+        return f"({operator} {' '.join(operands)})"
 
 
 def to_prefix_notation(statement: str) -> str:
@@ -159,6 +162,9 @@ def to_prefix_notation(statement: str) -> str:
 
 
 class _PyarrowDNFTransformer(lark.Transformer):
+    """lark.Transformer to translate to pyarrow's special DNF format"""
+
+    # pylint: disable=missing-function-docstring,missing-class-docstring,no-self-use
     @dataclass
     class Column:
         name: str
@@ -237,7 +243,7 @@ class _PyarrowDNFTransformer(lark.Transformer):
         raise ValueError("Pyarrow doesn't support the `NOT` operator")
 
     @lark.v_args(inline=True)
-    def notin_list(self, column: lark.Token, notin: lark.Token, lst: lark.Token):
+    def notin_list(self, column: lark.Token, _: lark.Token, lst: lark.Token):
         return _PyarrowDNFTransformer.Condition(column, "not in", lst)
 
     @lark.v_args(inline=True)
@@ -282,6 +288,9 @@ def to_pyarrow_dnf(statement: str) -> List[List[Tuple[str, str, Any]]]:
     Returns:
         The filter statement converted to a list of lists of tuples.
 
+    Raises:
+        ValueError: If the statement cannot be parsed
+
     Examples:
         >>> to_pyarrow_dnf("a.column != 0")
         [[('a.column', '!=', 0)]]
@@ -300,10 +309,13 @@ def to_pyarrow_dnf(statement: str) -> List[List[Tuple[str, str, Any]]]:
         return [predicate.format()]
     if isinstance(predicate, _PyarrowDNFTransformer.Or):
         return predicate.format()
-    RuntimeError("Invalid statement")
+    raise ValueError(f"Invalid statement {statement}")
 
 
 class _SQLTransformer(lark.Transformer):
+    """__INCOMPLETE__ lark.Transformer to translate to SQL"""
+
+    # pylint: disable=missing-function-docstring,no-self-use
     def SIGNED_NUMBER(self, tok):
         """Convert the value of `tok` from string to number"""
         try:

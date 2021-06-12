@@ -3,12 +3,13 @@ import doctest
 
 import pytest
 
-from dframeio import filter
+import dframeio.filter
 
 
 def test_doctest():
+    """Run the module's doctests"""
     try:
-        doctest.testmod(filter, raise_on_error=True, verbose=True)
+        doctest.testmod(dframeio.filter, raise_on_error=True, verbose=True)
     except doctest.DocTestFailure as f:
         print(f"Got:\n    {f.got}")
         assert f.example.want.strip() == f.got.strip(), "Doctest failed"
@@ -55,7 +56,8 @@ def test_doctest():
     ],
 )
 def test_to_prefix_notation(expression, expected_prefix_notation):
-    prefix = filter.to_prefix_notation(expression)
+    """Test to_prefix_notation() with examples"""
+    prefix = dframeio.filter.to_prefix_notation(expression)
     assert prefix == expected_prefix_notation
 
 
@@ -89,7 +91,8 @@ def test_to_prefix_notation(expression, expected_prefix_notation):
     ],
 )
 def test_to_pyarrow_dnf(expression, expected_dnf):
-    dnf = filter.to_pyarrow_dnf(expression)
+    """Examples for to_pyarrow_dnf()"""
+    dnf = dframeio.filter.to_pyarrow_dnf(expression)
     assert dnf == expected_dnf
 
 
@@ -103,5 +106,6 @@ def test_to_pyarrow_dnf(expression, expected_dnf):
     ],
 )
 def test_to_pyarrow_dnf_errors(expression):
+    """Try some normally correct expressions which are not supported by pyarrow"""
     with pytest.raises(ValueError):
-        print(filter.to_pyarrow_dnf(expression))
+        print(dframeio.filter.to_pyarrow_dnf(expression))
