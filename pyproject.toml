@@ -26,6 +26,7 @@ packages = [
 python = ">=3.7.1,<4.0"
 pandas = ">=1.0.0,<2.0"
 pyarrow = { version = "^4.0.0", optional = true }
+lark-parser = "^0.11.3"
 
 [tool.poetry.extras]
 pyarrow = ["pyarrow"]
@@ -71,6 +72,9 @@ pylint = "^*"
 pandera = "*"
 yamllint = "*"
 pylint-junit = "*"
+#railroad-diagrams = "^1.1.0"  # This is only for pyparsing[diagrams]
+#Jinja2 = "^3.0.1"  # This is only for pyparsing[diagrams]
+pydot = "^1.4.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -115,13 +119,9 @@ disable = [
     "fixme", # Creates warnings for todo items
     "no-else-return", # Creates refactor result for indented else block; which however might be more readable
     "duplicate-code", # Unfortunately this gives alerts also for identical function signatures
+    "line-too-long", # Checked already by flake8
 ]
 
 [tool.pylint.design]
 max-args = 10  # Maximum number of arguments for functions
 max-attributes = 15  # Maximum number of attributes for a class
-#
-#[TYPECHECK]
-## List of members which are set dynamically and missed by pylint inference
-## system, and so shouldn't trigger E0201 when accessed.
-#generated-members=pytest.*
