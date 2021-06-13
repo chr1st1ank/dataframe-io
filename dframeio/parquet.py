@@ -1,5 +1,6 @@
 """Implementation to access parquet datasets using pyarrow."""
 import collections
+import random
 import shutil
 from pathlib import Path
 from typing import Dict, Iterable, List, Union
@@ -87,8 +88,8 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         Args:
             source: The path of the file or folder with a parquet dataset to read
             columns: List of column names to limit the reading to
-            row_filter: Filter expression for selecting rows.
-            limit: Maximum number of rows to return (top-n)
+            row_filter: Filter expression for selecting rows
+            limit: Maximum number of rows to return (limit to first n rows)
             sample: Size of a random sample to return
             drop_duplicates: Whether to drop duplicate rows from the final selection
 
@@ -101,20 +102,11 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         The logic of the filtering arguments is as documented for
         [`AbstractDataFrameReader.read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).
         """
-        full_path = Path(self._base_path) / source
-        if Path(self._base_path) not in full_path.parents:
-            raise ValueError(
-                f"The given source path {source} is not in base_path {self._base_path}!"
-            )
-        kwargs = dict(columns=columns, use_threads=True, use_pandas_metadata=True)
-        if row_filter:
-            kwargs["filters"] = dframeio.filter.to_pyarrow_dnf(row_filter)
-        df = pq.read_table(str(full_path), **kwargs).to_pandas()
-        if limit > 0:
-            df = df.head(limit)
-        if sample > 0:
-            df = df.sample(sample)
-        return df
+        full_path = self._validated_full_path(source)
+        df = self._read_parquet_table(
+            full_path, columns=columns, row_filter=row_filter, limit=limit, sample=sample
+        )
+        return df.to_pandas()
 
     def read_to_dict(
         self,
@@ -130,8 +122,8 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         Args:
             source: The path of the file or folder with a parquet dataset to read
             columns: List of column names to limit the reading to
-            row_filter: Filter expression for selecting rows.
-            limit: Maximum number of rows to return (top-n)
+            row_filter: Filter expression for selecting rows
+            limit: Maximum number of rows to return (limit to first n rows)
             sample: Size of a random sample to return
             drop_duplicates: Whether to drop duplicate rows
 
@@ -145,11 +137,10 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         [`AbstractDataFrameReader.read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).
         """
         full_path = self._validated_full_path(source)
-        kwargs = dict(columns=columns, use_threads=True, use_pandas_metadata=True)
-        if row_filter:
-            kwargs["filters"] = dframeio.filter.to_pyarrow_dnf(row_filter)
-        df = pq.read_table(str(full_path), **kwargs).to_pydict()
-        return df
+        df = self._read_parquet_table(
+            full_path, columns=columns, row_filter=row_filter, limit=limit, sample=sample
+        )
+        return df.to_pydict()
 
     def write_replace(self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List]]):
         """Write data with full replacement of an existing dataset
@@ -252,3 +243,33 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         if isinstance(dataframe, collections.Mapping):
             return pa.Table.from_pydict(dataframe)
         raise ValueError("dataframe must be a pandas.DataFrame or dict")
+
+    @staticmethod
+    def _read_parquet_table(
+        full_path: str,
+        columns: List[str] = None,
+        row_filter: str = None,
+        limit: int = -1,
+        sample: int = -1,
+    ) -> pa.Table:
+        """Read a parquet dataset from disk into a parquet.Table object
+
+        Args:
+            source: The full path of the file or folder with a parquet dataset to read
+            columns: List of column names to limit the reading to
+            row_filter: Filter expression for selecting rows
+            limit: Maximum number of rows to return (limit to first n rows)
+
+        Returns:
+            Content of the file as a pyarrow Table
+        """
+        kwargs = dict(columns=columns, use_threads=True, use_pandas_metadata=True)
+        if row_filter:
+            kwargs["filters"] = dframeio.filter.to_pyarrow_dnf(row_filter)
+        df = pq.read_table(str(full_path), **kwargs)
+        if limit >= 0:
+            df = df.slice(0, min(df.num_rows, limit))
+        if sample >= 0:
+            indices = random.sample(range(df.num_rows), min(df.num_rows, sample))
+            df = df.take(indices)
+        return df

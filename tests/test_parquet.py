@@ -102,6 +102,23 @@ def test_read_to_pandas_some_rows(sample_data_path):
     assert len(df) == SampleDataSchema.n_salary_over_150000()
 
 
+def test_read_to_pandas_sample(sample_data_path):
+    """Read a sample dataset into a pandas dataframe, filtering some rows"""
+    backend = dframeio.ParquetBackend(str(sample_data_path.parent))
+    df = backend.read_to_pandas(sample_data_path.name, sample=10)
+    SampleDataSchema.to_schema().validate(df)
+    assert len(df) == 10
+
+
+@pytest.mark.parametrize("limit", [0, 10])
+def test_read_to_pandas_limit(sample_data_path, limit):
+    """Read a sample dataset into a pandas dataframe, filtering some rows"""
+    backend = dframeio.ParquetBackend(str(sample_data_path.parent))
+    df = backend.read_to_pandas(sample_data_path.name, limit=limit)
+    SampleDataSchema.to_schema().validate(df)
+    assert len(df) == limit
+
+
 def test_read_to_pandas_base_path_check(sample_data_path):
     """Try if it isn't possible to read from outside the base path"""
     backend = dframeio.ParquetBackend(str(sample_data_path.parent))
@@ -140,6 +157,28 @@ def test_read_to_dict_some_rows(sample_data_path):
     df = pd.DataFrame(df)
     SampleDataSchema.to_schema().validate(df)
     assert len(df) == SampleDataSchema.n_salary_over_150000()
+
+
+def test_read_to_dict_limit(sample_data_path):
+    """Read a sample dataset into a dictionary, filtering some rows"""
+    backend = dframeio.ParquetBackend(str(sample_data_path.parent))
+    df = backend.read_to_dict(sample_data_path.name, columns=["id", "first_name"], limit=10)
+    assert isinstance(df, dict)
+    assert set(df.keys()) == {"id", "first_name"}
+    df = pd.DataFrame(df)
+    SampleDataSchema.to_schema().select_columns(["id", "first_name"]).validate(df)
+    assert len(df) == 10
+
+
+def test_read_to_dict_sample(sample_data_path):
+    """Read a sample dataset into a dictionary, filtering some rows"""
+    backend = dframeio.ParquetBackend(str(sample_data_path.parent))
+    df = backend.read_to_dict(sample_data_path.name, sample=10)
+    assert isinstance(df, dict)
+    assert set(df.keys()) == SampleDataSchema.to_schema().columns.keys()
+    df = pd.DataFrame(df)
+    SampleDataSchema.to_schema().validate(df)
+    assert len(df) == 10
 
 
 def test_read_to_dict_base_path_check(sample_data_path):
