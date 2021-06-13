@@ -1,4 +1,5 @@
-"""Implementation to access parquet datasets using pyarrow."""
+"""Access parquet datasets using pyarrow.
+"""
 import collections
 import random
 import shutil
@@ -28,7 +29,8 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
     """Backend to read and write parquet datasets
 
     Args:
-        base_path:
+        base_path: Base path for the parquet files. Only files in this folder or
+            subfolders can be read from or written to.
         partitions: (For writing only) Columns to use for partitioning.
             If given, the write functions split the data into a parquet dataset.
             Subfolders with the following naming schema are created when writing:
@@ -37,7 +39,6 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
             Per default data is written as a single file.
 
             Cannot be combined with rows_per_file.
-
         rows_per_file: (For writing only) If a positive integer value is given
             this specifies the desired number of rows per file. The data is then
             written to multiple files.
@@ -153,9 +154,10 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
                 in the format `column_name: [column_data]`
 
         Raises:
-             ValueError: If the dataframe does not contain the columns to partition by
+            ValueError: If the dataframe does not contain the columns to partition by
                 as specified in the [`__init__()`](dframeio.parquet.ParquetBackend)
                 function.
+            TypeError: When the dataframe is neither an pandas.DataFrame nor a dictionary
         """
         full_path = self._validated_full_path(target)
         if full_path.exists():
@@ -190,10 +192,7 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
                 )
             else:
                 pq.write_table(
-                    arrow_table,
-                    where=str(full_path),
-                    flavor="spark",
-                    compression="snappy",
+                    arrow_table, where=str(full_path), flavor="spark", compression="snappy"
                 )
 
     def write_append(self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List]]):
@@ -202,12 +201,20 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         raise NotImplementedError()
 
     @staticmethod
-    def _n_rows(dataframe):
+    def _n_rows(dataframe: Union[pd.DataFrame, Dict[str, List]]) -> int:
+        """Returns the number of rows in the dataframe
+
+        Returns:
+            Number of rows as int
+
+        Raises:
+            TypeError: When the dataframe is neither an pandas.DataFrame nor a dictionary
+        """
         if isinstance(dataframe, pd.DataFrame):
             return len(dataframe)
         if isinstance(dataframe, collections.Mapping):
             return len(next(iter(dataframe.values())))
-        raise ValueError("dataframe must be a pandas.DataFrame or dict")
+        raise TypeError("dataframe must be a pandas.DataFrame or dict")
 
     @staticmethod
     def _dataframe_slice_as_arrow_table(
