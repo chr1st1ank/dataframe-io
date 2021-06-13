@@ -4,6 +4,8 @@ import shutil
 from pathlib import Path
 from typing import Dict, Iterable, List, Union
 
+import dframeio.filter
+
 from .abstract import AbstractDataFrameReader, AbstractDataFrameWriter
 
 try:
@@ -104,13 +106,10 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
             raise ValueError(
                 f"The given source path {source} is not in base_path {self._base_path}!"
             )
+        kwargs = dict(columns=columns, use_threads=True, use_pandas_metadata=True)
         if row_filter:
-            raise NotImplementedError()
-        df = pq.read_table(
-            str(full_path), columns=columns, use_threads=True, use_pandas_metadata=True
-        ).to_pandas()
-        if row_filter:
-            df = df.query(row_filter)
+            kwargs["filters"] = dframeio.filter.to_pyarrow_dnf(row_filter)
+        df = pq.read_table(str(full_path), **kwargs).to_pandas()
         if limit > 0:
             df = df.head(limit)
         if sample > 0:
@@ -131,7 +130,7 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         Args:
             source: The path of the file or folder with a parquet dataset to read
             columns: List of column names to limit the reading to
-            row_filter: NOT IMPLEMENTED. Reserved keyword for filtering rows.
+            row_filter: Filter expression for selecting rows.
             limit: Maximum number of rows to return (top-n)
             sample: Size of a random sample to return
             drop_duplicates: Whether to drop duplicate rows
@@ -146,13 +145,10 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         [`AbstractDataFrameReader.read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).
         """
         full_path = self._validated_full_path(source)
-        df = pq.read_table(
-            str(full_path), columns=columns, use_threads=True, use_pandas_metadata=True
-        ).to_pydict()
+        kwargs = dict(columns=columns, use_threads=True, use_pandas_metadata=True)
         if row_filter:
-            # TODO: Pyarrow supports filtering on loading
-            #  https://arrow.apache.org/docs/python/generated/pyarrow.parquet.ParquetDataset.html
-            raise NotImplementedError("Row filtering is not implemented for dicts")
+            kwargs["filters"] = dframeio.filter.to_pyarrow_dnf(row_filter)
+        df = pq.read_table(str(full_path), **kwargs).to_pydict()
         return df
 
     def write_replace(self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List]]):

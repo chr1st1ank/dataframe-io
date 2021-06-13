@@ -113,6 +113,8 @@ def test_read_to_dict(sample_data_path):
     """Read a sample dataset into a dictionary"""
     backend = dframeio.ParquetBackend(str(sample_data_path.parent))
     df = backend.read_to_dict(sample_data_path.name)
+    assert isinstance(df, dict)
+    assert set(df.keys()) == SampleDataSchema.to_schema().columns.keys()
     df = pd.DataFrame(df)
     SampleDataSchema.to_schema().validate(df)
     assert len(df) == SampleDataSchema.length()
@@ -122,6 +124,8 @@ def test_read_to_dict_some_columns(sample_data_path):
     """Read a sample dataset into a dictionary, filtering some columns"""
     backend = dframeio.ParquetBackend(str(sample_data_path.parent))
     df = backend.read_to_dict(sample_data_path.name, columns=["id", "first_name"])
+    assert isinstance(df, dict)
+    assert set(df.keys()) == {"id", "first_name"}
     df = pd.DataFrame(df)
     SampleDataSchema.to_schema().select_columns(["id", "first_name"]).validate(df)
     assert len(df) == SampleDataSchema.length()
@@ -130,8 +134,12 @@ def test_read_to_dict_some_columns(sample_data_path):
 def test_read_to_dict_some_rows(sample_data_path):
     """Read a sample dataset into a dictionary, filtering some rows"""
     backend = dframeio.ParquetBackend(str(sample_data_path.parent))
-    with pytest.raises(NotImplementedError):
-        backend.read_to_dict(sample_data_path.name, row_filter="salary > 150000")
+    df = backend.read_to_dict(sample_data_path.name, row_filter="salary > 150000")
+    assert isinstance(df, dict)
+    assert set(df.keys()) == SampleDataSchema.to_schema().columns.keys()
+    df = pd.DataFrame(df)
+    SampleDataSchema.to_schema().validate(df)
+    assert len(df) == SampleDataSchema.n_salary_over_150000()
 
 
 def test_read_to_dict_base_path_check(sample_data_path):
