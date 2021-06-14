@@ -44,12 +44,19 @@ def sample_data_path(request):
     return Path(__file__).parent / "data" / "parquet" / request.param
 
 
+def read_sample_dataframe():
+    """Read the sample dataframe to pandas and return a cached copy"""
+    if not hasattr(read_sample_dataframe, "df"):
+        parquet_file = Path(__file__).parent / "data" / "parquet" / "singlefile.parquet"
+        backend = dframeio.ParquetBackend(str(parquet_file.parent))
+        read_sample_dataframe.df = backend.read_to_pandas(parquet_file.name)
+    return read_sample_dataframe.df.copy()
+
+
 @pytest.fixture(scope="function")
 def sample_dataframe():
     """Provide the sample dataframe"""
-    parquet_file = Path(__file__).parent / "data" / "parquet" / "singlefile.parquet"
-    backend = dframeio.ParquetBackend(str(parquet_file.parent))
-    return backend.read_to_pandas(parquet_file.name)
+    return read_sample_dataframe()
 
 
 @pytest.fixture(scope="function")
@@ -335,3 +342,98 @@ def test_write_replace_dict_invalid_partitions(tmp_path_factory, partitions):
     backend = dframeio.ParquetBackend(str(tempdir), partitions=partitions)
     with pytest.raises(ValueError):
         backend.write_replace("data.parquet", {})
+
+
+@pytest.fixture(params=["pandas", "dict"])
+def first_chunk(request):
+    """First n lines of the sample dataframe"""
+    if request.param == "pandas":
+        return read_sample_dataframe().iloc[:100]
+    return read_sample_dataframe().iloc[:100].to_dict("list")
+
+
+@pytest.fixture(params=["pandas", "dict"])
+def second_chunk(request):
+    if request.param == "pandas":
+        return read_sample_dataframe().iloc[100:]
+    return read_sample_dataframe().iloc[100:].to_dict("list")
+
+
+def test_write_append_df(sample_dataframe, first_chunk, second_chunk, tmp_path_factory):
+    """Write the dataframe in two pieces, read it again and check identity"""
+    tempdir = tmp_path_factory.mktemp("test_write_append_df")
+
+    # Write first chunk
+    backend = dframeio.ParquetBackend(str(tempdir))
+    backend.write_append("data.parquet", first_chunk)
+
+    # Write second chunk
+    backend = dframeio.ParquetBackend(str(tempdir))
+    backend.write_append("data.parquet", second_chunk)
+
+    # Read and compare results
+    backend = dframeio.ParquetBackend(str(tempdir))
+    dataframe_after = backend.read_to_pandas("data.parquet")
+    assert_frame_equal(dataframe_after, sample_dataframe)
+
+
+def test_write_append_df_multifile(sample_dataframe, first_chunk, second_chunk, tmp_path_factory):
+    """Write the dataframe, read it again and check identity"""
+    tempdir = tmp_path_factory.mktemp("test_write_append_df")
+    (tempdir / "data").mkdir()
+
+    # Write first chunk
+    backend = dframeio.ParquetBackend(str(tempdir))
+    backend.write_append(tempdir / "data" / "first.parquet", first_chunk)
+
+    # Write second chunk
+    backend = dframeio.ParquetBackend(str(tempdir), rows_per_file=1000)
+    backend.write_append("data", second_chunk)
+
+    # Validate
+    assert sum(1 for _ in (tempdir / "data").glob("*")) == 6, "There should be 6 files"
+    assert (tempdir / "data" / "first.parquet").exists()
+    backend2 = dframeio.ParquetBackend(str(tempdir))
+    dataframe_after = backend2.read_to_pandas("data")
+    if isinstance(first_chunk, pd.DataFrame) and isinstance(second_chunk, pd.DataFrame):
+        assert_frame_equal(dataframe_after, sample_dataframe, check_like=True)
+    SampleDataSchema.to_schema().validate(dataframe_after)
+    assert len(dataframe_after) == SampleDataSchema.length()
+
+
+def test_write_append_df_partitioned(sample_dataframe, first_chunk, second_chunk, tmp_path_factory):
+    """Write the dataframe, read it again and check identity"""
+    tempdir = tmp_path_factory.mktemp("test_write_append_df")
+    (tempdir / "data").mkdir()
+
+    # Write first chunk
+    backend = dframeio.ParquetBackend(str(tempdir), partitions=["gender"])
+    backend.write_append(tempdir / "data" / "first.parquet", first_chunk)
+
+    # Write second chunk
+    backend = dframeio.ParquetBackend(str(tempdir), partitions=["gender"])
+    backend.write_append("data", second_chunk)
+
+    # Validate
+    created_partitions = {f.name for f in (tempdir / "data").glob("*=*")}
+    assert created_partitions == {"gender=", "gender=Female", "gender=Male"}
+
+    backend2 = dframeio.ParquetBackend(str(tempdir))
+    dataframe_after = backend2.read_to_pandas("data")
+    # It is o.k. to get the partition keys back as categoricals, because
+    # that's more efficient. For comparison we make the column string again.
+    dataframe_after = dataframe_after.assign(gender=dataframe_after["gender"].astype(str))
+    if isinstance(first_chunk, pd.DataFrame) and isinstance(second_chunk, pd.DataFrame):
+        assert_frame_equal(dataframe_after, sample_dataframe, check_like=True)
+    SampleDataSchema.to_schema().validate(dataframe_after)
+    assert len(dataframe_after) == SampleDataSchema.length()
+
+
+@pytest.mark.parametrize("partitions", [[5], ["foobar"]])
+def test_write_append_df_invalid_partitions(tmp_path_factory, partitions):
+    """Write the dataframe, read it again and check identity"""
+    tempdir = tmp_path_factory.mktemp("test_write_append_df")
+
+    backend = dframeio.ParquetBackend(str(tempdir), partitions=partitions)
+    with pytest.raises(ValueError):
+        backend.write_append("data.parquet", pd.DataFrame())

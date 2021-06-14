@@ -1,6 +1,7 @@
 """Implementation to access parquet datasets using pyarrow."""
 import collections
 import random
+import re
 import shutil
 from pathlib import Path
 from typing import Dict, Iterable, List, Union
@@ -198,8 +199,72 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
 
     def write_append(self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List]]):
         """Write data in append-mode"""
-        # TODO: Implement
-        raise NotImplementedError()
+        full_path = self._validated_full_path(target)
+        if full_path.exists() and full_path.is_file():
+            if isinstance(dataframe, pd.DataFrame):
+                dataframe = pd.concat([self.read_to_pandas(str(full_path)), dataframe])
+            elif isinstance(dataframe, collections.Mapping):
+                old_data = self._read_parquet_table(
+                    str(full_path), use_pandas_metadata=False
+                ).to_pydict()
+                self._remove_matching_keys(old_data, r"__index_level_\d+__")
+                if set(old_data.keys()) != set(dataframe.keys()):
+                    raise ValueError(
+                        "Can only append with identical columns. "
+                        f"Existing columns: {set(old_data.keys())} "
+                        f"New columns: {set(dataframe.keys())}."
+                    )
+                dataframe = {k: old_data[k] + dataframe[k] for k in old_data.keys()}
+            else:
+                raise TypeError(
+                    "dataframe must be either a pandas.DataFrame or a dictionary. "
+                    f"Got type {type(dataframe)}"
+                )
+            full_path.unlink()
+        if self._rows_per_file > 0:
+            full_path.mkdir(exist_ok=True)
+            filename_index = 0
+            for i in range(0, self._n_rows(dataframe), self._rows_per_file):
+                while (full_path / (full_path.name + str(filename_index))).exists():
+                    filename_index += 1
+                pq.write_table(
+                    self._dataframe_slice_as_arrow_table(dataframe, i, i + self._rows_per_file),
+                    where=str(full_path / (full_path.name + str(filename_index))),
+                    flavor="spark",
+                    compression="snappy",
+                )
+                filename_index += 1
+        else:
+            arrow_table = self._to_arrow_table(dataframe)
+
+            if self._partitions is not None:
+                missing_columns = set(self._partitions) - set(arrow_table.column_names)
+                if missing_columns:
+                    raise ValueError(
+                        f"Expected the dataframe to have the partition columns {missing_columns}"
+                    )
+                pq.write_to_dataset(
+                    arrow_table,
+                    root_path=str(full_path),
+                    partition_cols=self._partitions,
+                    flavor="spark",
+                    compression="snappy",
+                )
+            else:
+                pq.write_table(
+                    arrow_table,
+                    where=str(full_path),
+                    flavor="spark",
+                    compression="snappy",
+                )
+
+    @staticmethod
+    def _remove_matching_keys(d: collections.Mapping, regex: str):
+        """Remove all keys matching regex from the dictionary d"""
+        compiled_regex = re.compile(regex)
+        keys_to_delete = [k for k in d.keys() if compiled_regex.match(k)]
+        for k in keys_to_delete:
+            del d[k]
 
     @staticmethod
     def _n_rows(dataframe):
@@ -251,6 +316,7 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         row_filter: str = None,
         limit: int = -1,
         sample: int = -1,
+        use_pandas_metadata: bool = True,
     ) -> pa.Table:
         """Read a parquet dataset from disk into a parquet.Table object
 
@@ -259,11 +325,12 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
             columns: List of column names to limit the reading to
             row_filter: Filter expression for selecting rows
             limit: Maximum number of rows to return (limit to first n rows)
+            use_pandas_metadata: Whether to read also pandas data such as index columns
 
         Returns:
             Content of the file as a pyarrow Table
         """
-        kwargs = dict(columns=columns, use_threads=True, use_pandas_metadata=True)
+        kwargs = dict(columns=columns, use_threads=True, use_pandas_metadata=use_pandas_metadata)
         if row_filter:
             kwargs["filters"] = dframeio.filter.to_pyarrow_dnf(row_filter)
         df = pq.read_table(str(full_path), **kwargs)
