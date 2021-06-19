@@ -7,23 +7,13 @@ import shutil
 from pathlib import Path
 from typing import Dict, Iterable, List, Union
 
+import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
+
 import dframeio.filter
 
 from .abstract import AbstractDataFrameReader, AbstractDataFrameWriter
-
-try:
-    import pandas as pd
-except ImportError:
-    pd = None
-
-try:
-    import pyarrow as pa
-    import pyarrow.parquet as pq
-except ModuleNotFoundError as e:
-    if e.name == "pyarrow":
-        pq = None
-    else:
-        raise
 
 
 class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
