@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../../img/favicon.ico">
+  <title>dframeio.filter - dataframe-io</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../../css/theme.css" />
+  <link rel="stylesheet" href="../../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="//use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet" />
+  <link href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css" rel="stylesheet" />
+  <link href="../../../css/mkapi-common.css" rel="stylesheet" />
+  <link href="../../../css/mkapi-readthedocs.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "dframeio.filter";
+    var mkdocs_page_input_path = "api/source/dframeio.filter.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../../.." class="icon icon-home"> dataframe-io</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../installation/">Installation</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../usage/">Usage</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">API documentation</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">dframeio</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../dframeio/">dframeio</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../dframeio.filter/">dframeio.filter</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../dframeio.abstract/">dframeio.abstract</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../dframeio.parquet/">dframeio.parquet</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../contributing/">Contributing</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../..">dataframe-io</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>dframeio.filter</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/chr1st1ank/dframeio/edit/master/docs/api/source/dframeio.filter.md"> Edit on dframeio</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <div class="mkapi-node">
+<h1 id="" class="mkapi-object mkapi-object-code plain">
+<span class="mkapi-object-kind mkapi-object-kind-code">SOURCE CODE</span>
+<span class="mkapi-object-prefix">dframeio.</span><span class="mkapi-object-name">filter</span>
+<span id="dframeio.filter"></span><a class="mkapi-docs-link" href="../../dframeio.filter">DOCS</a>
+</h1>
+
+<div class="mkapi-code">
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Filter expressions for data reading operations with predicate pushdown.</span>
+
+<span class="sd">This module is responsible for translate filter expressions from a simplified SQL syntax</span>
+<span class="sd">into different formats understood by the various backends. This way the same language can</span>
+<span class="sd">be used to implement filtering regardless of the data source.</span>
+
+<span class="sd">The grammar of the filter statements is the same as in a WHERE clause in SQL. Supported</span>
+<span class="sd">features:</span>
+
+<span class="sd">  - Comparing column values to numbers, strings and another column&#39;s values using the operators</span>
+<span class="sd">    `&gt; &lt; = != &gt;= &lt;=`, e.g. `a.column &lt; 5`</span>
+<span class="sd">  - Comparison against a set of values with ÌN and `NOT IN`, e.g. `a.column IN (1, 2, 3)`</span>
+<span class="sd">  - Boolean combination of conditions with `AND`, `OR` and `ǸOT`</span>
+<span class="sd">  - `NULL` comparison as in `a IS NULL` or `b IS NOT NULL`</span>
+
+<span class="sd">Strings can be quoted with single-quotes and double-quotes.</span>
+<span class="sd">Column names can but don&#39;t have to be quoted with SQL quotes (backticks). E.g.:</span>
+
+<span class="sd">```sql</span>
+<span class="sd">`a.column` = &quot;abc&quot; AND b IS NOT NULL OR index &lt; 50</span>
+<span class="sd">```</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">lark</span>
+
+<span class="c1"># See SQL 2003 working draft http://www.wiscorp.com/sql20nn.zip (Part 2, section 6.35)</span>
+<span class="n">lark_grammar</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    ?boolean_value_exp: boolean_term</span>
+<span class="s2">        | boolean_value_exp &quot;OR&quot;i boolean_term -&gt; or_operation</span>
+<span class="s2">    ?boolean_term: boolean_factor</span>
+<span class="s2">        | boolean_term &quot;AND&quot;i boolean_factor -&gt; and_operation</span>
+<span class="s2">    ?boolean_factor:  &quot;(&quot; boolean_value_exp &quot;)&quot;</span>
+<span class="s2">        | single_condition</span>
+<span class="s2">        | &quot;NOT&quot; single_condition -&gt; negation</span>
+<span class="s2">    ?single_condition: comparison</span>
+<span class="s2">        | null_comparison</span>
+<span class="s2">        | notin_list</span>
+<span class="s2">        | in_list</span>
+<span class="s2">    comparison: columnname BINOP column_rval</span>
+<span class="s2">    null_comparison: columnname (ISNULL | NOTNULL)</span>
+<span class="s2">    notin_list: columnname NOTIN literal_list</span>
+<span class="s2">    in_list: columnname &quot;IN&quot;i literal_list</span>
+<span class="s2">    literal_list: (&quot;(&quot;) literal (&quot;,&quot; literal)* (&quot;)&quot;)</span>
+<span class="s2">    ?literal: SIGNED_NUMBER | ESCAPED_STRING</span>
+<span class="s2">    ?column_rval: columnname</span>
+<span class="s2">        | SIGNED_NUMBER</span>
+<span class="s2">        | ESCAPED_STRING</span>
+<span class="s2">    ?columnname: &quot;`&quot; columnname &quot;`&quot;</span>
+<span class="s2">        | UNQUOTED_COLUMNNAME</span>
+
+<span class="s2">    ISNULL.9: /IS\s+NULL/i</span>
+<span class="s2">    NOTNULL.10: /IS\s+NOT\s+NULL/i</span>
+<span class="s2">    NOTIN.10: /NOT\s+IN/i</span>
+<span class="s2">    NOT.9: &quot;NOT&quot;i</span>
+<span class="s2">    UNQUOTED_COLUMNNAME.1: NAMECHAR+ (&quot;.&quot; + NAMECHAR+)*</span>
+<span class="s2">    NAMECHAR: &quot;_&quot;|&quot;$&quot;|LETTER|DIGIT</span>
+<span class="s2">    BINOP.10: &quot;!=&quot;</span>
+<span class="s2">         | &quot;&gt;=&quot;</span>
+<span class="s2">         | &quot;&lt;=&quot;</span>
+<span class="s2">         | &quot;&lt;&quot;</span>
+<span class="s2">         | &quot;&gt;&quot;</span>
+<span class="s2">         | &quot;=&quot;</span>
+<span class="s2">    ESCAPED_STRING.2 : DOUBLE_QUOTE_ESCAPED_STRING | SINGLE_QUOTE_ESCAPED_STRING</span>
+<span class="s2">    DOUBLE_QUOTE_ESCAPED_STRING.2 : &quot;\&quot;&quot; _STRING_ESC_INNER &quot;\&quot;&quot;</span>
+<span class="s2">    SINGLE_QUOTE_ESCAPED_STRING.2 : &quot;&#39;&quot; _STRING_ESC_INNER &quot;&#39;&quot;</span>
+
+<span class="s2">    </span><span class="si">%i</span><span class="s2">mport common.LETTER</span>
+<span class="s2">    </span><span class="si">%i</span><span class="s2">mport common.DIGIT</span>
+<span class="s2">    </span><span class="si">%i</span><span class="s2">mport common.SIGNED_NUMBER</span>
+<span class="s2">    </span><span class="si">%i</span><span class="s2">mport common._STRING_ESC_INNER</span>
+<span class="s2">    </span><span class="si">%i</span><span class="s2">mport common.WS_INLINE</span>
+<span class="s2">    </span><span class="si">%i</span><span class="s2">gnore WS_INLINE</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">_make_parser</span><span class="p">(</span><span class="n">transformer</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">lark</span><span class="o">.</span><span class="n">Transformer</span><span class="p">]):</span>
+    <span class="k">return</span> <span class="n">lark</span><span class="o">.</span><span class="n">Lark</span><span class="p">(</span>
+        <span class="n">lark_grammar</span><span class="p">,</span>
+        <span class="n">start</span><span class="o">=</span><span class="s2">&quot;boolean_value_exp&quot;</span><span class="p">,</span>
+        <span class="n">lexer</span><span class="o">=</span><span class="s2">&quot;standard&quot;</span><span class="p">,</span>
+        <span class="n">parser</span><span class="o">=</span><span class="s2">&quot;lalr&quot;</span><span class="p">,</span>
+        <span class="n">transformer</span><span class="o">=</span><span class="n">transformer</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_PrefixNotationTransformer</span><span class="p">(</span><span class="n">lark</span><span class="o">.</span><span class="n">Transformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;lark.Transformer to translate to polish/prefix notation&quot;&quot;&quot;</span>
+
+    <span class="c1"># pylint: disable=missing-function-docstring,no-self-use</span>
+    <span class="k">def</span> <span class="nf">and_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operands</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_operation</span><span class="p">(</span><span class="s2">&quot;AND&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">operands</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">or_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operands</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_operation</span><span class="p">(</span><span class="s2">&quot;OR&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">operands</span><span class="p">)</span>
+
+    <span class="nd">@lark</span><span class="o">.</span><span class="n">v_args</span><span class="p">(</span><span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">comparison</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_operation</span><span class="p">(</span><span class="n">operator</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+
+    <span class="nd">@lark</span><span class="o">.</span><span class="n">v_args</span><span class="p">(</span><span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">null_comparison</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">operator</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;ISNULL&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_operation</span><span class="p">(</span><span class="s2">&quot;ISNULL&quot;</span><span class="p">,</span> <span class="n">operand</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">operator</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;NOTNULL&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_operation</span><span class="p">(</span><span class="s2">&quot;NOTNULL&quot;</span><span class="p">,</span> <span class="n">operand</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">lark</span><span class="o">.</span><span class="n">ParseError</span><span class="p">(</span><span class="s2">&quot;Invalid NULL comparison&quot;</span><span class="p">)</span>
+
+    <span class="nd">@lark</span><span class="o">.</span><span class="n">v_args</span><span class="p">(</span><span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">negation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_operation</span><span class="p">(</span><span class="s2">&quot;NOT&quot;</span><span class="p">,</span> <span class="n">operand</span><span class="p">)</span>
+
+    <span class="nd">@lark</span><span class="o">.</span><span class="n">v_args</span><span class="p">(</span><span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">notin_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">,</span> <span class="n">lst</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_operation</span><span class="p">(</span><span class="s2">&quot;NOTIN&quot;</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">lst</span><span class="p">)</span>
+
+    <span class="nd">@lark</span><span class="o">.</span><span class="n">v_args</span><span class="p">(</span><span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">in_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">,</span> <span class="n">lst</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_operation</span><span class="p">(</span><span class="s2">&quot;IN&quot;</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">lst</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">literal_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;[&quot;</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">members</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
+
+    <span class="k">def</span> <span class="nf">UNQUOTED_COLUMNNAME</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Column&lt;</span><span class="si">{</span><span class="n">name</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">ESCAPED_STRING</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tok</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">tok</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span><span class="n">tok</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">tok</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&#39;&quot;</span> <span class="ow">or</span> <span class="n">tok</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">tok</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;&#39;&quot;</span> <span class="o">+</span> <span class="n">tok</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">SIGNED_NUMBER</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tok</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert the value of `tok` from string to number&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">tok</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">tok</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">format_operation</span><span class="p">(</span><span class="n">operator</span><span class="p">,</span> <span class="o">*</span><span class="n">operands</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">operator</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">operands</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">to_prefix_notation</span><span class="p">(</span><span class="n">statement</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span><span id="dframeio.filter.to_prefix_notation"></span><a class="mkapi-docs-link" title="dframeio.filter.to_prefix_notation" href="../../dframeio.filter/#dframeio.filter.to_prefix_notation">DOCS</a>
+    <span class="sd">&quot;&quot;&quot;Parse a filter statement and return it in prefix notation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        statement: A filter predicate as string</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The filter statement in prefix notation (polish notation) as string</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; to_prefix_notation(&quot;a.column != 0&quot;)</span>
+<span class="sd">        &#39;(!= Column&lt;a.column&gt; 0)&#39;</span>
+
+<span class="sd">        &gt;&gt;&gt; to_prefix_notation(&quot;a &gt; 1 and b &lt;= 3&quot;)</span>
+<span class="sd">        &#39;(AND (&gt; Column&lt;a&gt; 1) (&lt;= Column&lt;b&gt; 3))&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">_make_parser</span><span class="p">(</span><span class="n">_PrefixNotationTransformer</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">statement</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_PyarrowDNFTransformer</span><span class="p">(</span><span class="n">lark</span><span class="o">.</span><span class="n">Transformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;lark.Transformer to translate to pyarrow&#39;s special DNF format&quot;&quot;&quot;</span>
+
+    <span class="c1"># pylint: disable=missing-function-docstring,missing-class-docstring,no-self-use</span>
+    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">Column</span><span class="p">:</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">Or</span><span class="p">:</span>
+        <span class="n">operands</span><span class="p">:</span> <span class="nb">list</span>
+
+        <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">]]:</span>
+            <span class="n">disjunction</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">operands</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">_PyarrowDNFTransformer</span><span class="o">.</span><span class="n">And</span><span class="p">):</span>
+                    <span class="n">disjunction</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">format</span><span class="p">())</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">_PyarrowDNFTransformer</span><span class="o">.</span><span class="n">Condition</span><span class="p">):</span>
+                    <span class="n">disjunction</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">o</span><span class="o">.</span><span class="n">format</span><span class="p">()])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;For PyArrow only disjunctions of conjunctions &quot;</span>
+                        <span class="s2">&quot;or simple conditions are allowed. &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2">` is not a single condition nor a conjunction.&quot;</span>
+                    <span class="p">)</span>
+            <span class="k">return</span> <span class="n">disjunction</span>
+
+    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">And</span><span class="p">:</span>
+        <span class="n">operands</span><span class="p">:</span> <span class="nb">list</span>
+
+        <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">]:</span>
+            <span class="n">conjunction</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">operands</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">_PyarrowDNFTransformer</span><span class="o">.</span><span class="n">Condition</span><span class="p">):</span>
+                    <span class="n">conjunction</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">format</span><span class="p">())</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;For PyArrow only conjunctions of simple conditions are allowed.&quot;</span>
+                    <span class="p">)</span>
+            <span class="k">return</span> <span class="n">conjunction</span>
+
+    <span class="nd">@dataclass</span>
+    <span class="k">class</span> <span class="nc">Condition</span><span class="p">:</span>
+        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">operator</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">_PyarrowDNFTransformer</span><span class="o">.</span><span class="n">Column</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;For pyarrow only comparisons of the form `key &lt;operator&gt; value`&quot;</span>
+                    <span class="s2">&quot;are allowed, where `key` must be a column name.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;For pyarrow only comparisons of the form `key &lt;operator&gt; value` are allowed.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">and_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operands</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_PyarrowDNFTransformer</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">operands</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">or_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operands</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_PyarrowDNFTransformer</span><span class="o">.</span><span class="n">Or</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">operands</span><span class="p">))</span>
+
+    <span class="nd">@lark</span><span class="o">.</span><span class="n">v_args</span><span class="p">(</span><span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">comparison</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_PyarrowDNFTransformer</span><span class="o">.</span><span class="n">Condition</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">operator</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+
+    <span class="nd">@lark</span><span class="o">.</span><span class="n">v_args</span><span class="p">(</span><span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">null_comparison</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">operator</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;ISNULL&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_PyarrowDNFTransformer</span><span class="o">.</span><span class="n">Condition</span><span class="p">(</span><span class="n">operand</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">operator</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;NOTNULL&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_PyarrowDNFTransformer</span><span class="o">.</span><span class="n">Condition</span><span class="p">(</span><span class="n">operand</span><span class="p">,</span> <span class="s2">&quot;!=&quot;</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">lark</span><span class="o">.</span><span class="n">ParseError</span><span class="p">(</span><span class="s2">&quot;Invalid NULL comparison&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">negation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Pyarrow doesn&#39;t support the `NOT` operator&quot;</span><span class="p">)</span>
+
+    <span class="nd">@lark</span><span class="o">.</span><span class="n">v_args</span><span class="p">(</span><span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">notin_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">,</span> <span class="n">lst</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_PyarrowDNFTransformer</span><span class="o">.</span><span class="n">Condition</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="s2">&quot;not in&quot;</span><span class="p">,</span> <span class="n">lst</span><span class="p">)</span>
+
+    <span class="nd">@lark</span><span class="o">.</span><span class="n">v_args</span><span class="p">(</span><span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">in_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">,</span> <span class="n">lst</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_PyarrowDNFTransformer</span><span class="o">.</span><span class="n">Condition</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="s2">&quot;in&quot;</span><span class="p">,</span> <span class="n">lst</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">literal_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">members</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">UNQUOTED_COLUMNNAME</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_PyarrowDNFTransformer</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">ESCAPED_STRING</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tok</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">tok</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span><span class="n">tok</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">tok</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&#39;&quot;</span> <span class="ow">or</span> <span class="n">tok</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">tok</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tok</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">SIGNED_NUMBER</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tok</span><span class="p">:</span> <span class="n">lark</span><span class="o">.</span><span class="n">Token</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert the value of `tok` from string to number&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">tok</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">tok</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_raise_error</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="n">e</span>
+
+
+<span class="k">def</span> <span class="nf">to_pyarrow_dnf</span><span class="p">(</span><span class="n">statement</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]:</span><span id="dframeio.filter.to_pyarrow_dnf"></span><a class="mkapi-docs-link" title="dframeio.filter.to_pyarrow_dnf" href="../../dframeio.filter/#dframeio.filter.to_pyarrow_dnf">DOCS</a>
+    <span class="sd">&quot;&quot;&quot;Convert a filter statement to the disjunctive normal form understood by pyarrow</span>
+
+<span class="sd">    Predicates are expressed in disjunctive normal form (DNF), like `[[(&#39;x&#39;, &#39;=&#39;, 0), ...], ...]`.</span>
+<span class="sd">    The outer list is understood as chain of disjunctions (&quot;or&quot;), every inner list as a chain</span>
+<span class="sd">    of conjunctions (&quot;and&quot;). The inner lists contain tuples with a single operation</span>
+<span class="sd">    in infix notation each.</span>
+<span class="sd">    More information about the format and its limitations can be found in the</span>
+<span class="sd">    [pyarrow documentation](https://arrow.apache.org/docs/python/generated/pyarrow.parquet.read_table.html#pyarrow-parquet-read-table).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        statement: A filter predicate as string</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The filter statement converted to a list of lists of tuples.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If the statement cannot be parsed</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; to_pyarrow_dnf(&quot;a.column != 0&quot;)</span>
+<span class="sd">        [[(&#39;a.column&#39;, &#39;!=&#39;, 0)]]</span>
+
+<span class="sd">        &gt;&gt;&gt; to_pyarrow_dnf(&quot;a &gt; 1 and b &lt;= 3&quot;)</span>
+<span class="sd">        [[(&#39;a&#39;, &#39;&gt;&#39;, 1), (&#39;b&#39;, &#39;&lt;=&#39;, 3)]]</span>
+
+<span class="sd">        &gt;&gt;&gt; to_pyarrow_dnf(&quot;a &gt; 1 and b &lt;= 3 or c = &#39;abc&#39;&quot;)</span>
+<span class="sd">        [[(&#39;a&#39;, &#39;&gt;&#39;, 1), (&#39;b&#39;, &#39;&lt;=&#39;, 3)], [(&#39;c&#39;, &#39;=&#39;, &#39;abc&#39;)]]</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">_make_parser</span><span class="p">(</span><span class="n">_PyarrowDNFTransformer</span><span class="p">())</span>
+    <span class="n">predicate</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">statement</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="n">_raise_error</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">predicate</span><span class="p">,</span> <span class="n">_PyarrowDNFTransformer</span><span class="o">.</span><span class="n">Condition</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[[</span><span class="n">predicate</span><span class="o">.</span><span class="n">format</span><span class="p">()]]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">predicate</span><span class="p">,</span> <span class="n">_PyarrowDNFTransformer</span><span class="o">.</span><span class="n">And</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">predicate</span><span class="o">.</span><span class="n">format</span><span class="p">()]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">predicate</span><span class="p">,</span> <span class="n">_PyarrowDNFTransformer</span><span class="o">.</span><span class="n">Or</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">predicate</span><span class="o">.</span><span class="n">format</span><span class="p">()</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid statement </span><span class="si">{</span><span class="n">statement</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_SQLTransformer</span><span class="p">(</span><span class="n">lark</span><span class="o">.</span><span class="n">Transformer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;__INCOMPLETE__ lark.Transformer to translate to SQL&quot;&quot;&quot;</span>
+
+    <span class="c1"># pylint: disable=missing-function-docstring,no-self-use</span>
+    <span class="k">def</span> <span class="nf">SIGNED_NUMBER</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tok</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert the value of `tok` from string to number&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tok</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">tok</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tok</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">tok</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">ESCAPED_STRING</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tok</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">tok</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span><span class="n">tok</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">tok</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&#39;&quot;</span> <span class="ow">or</span> <span class="n">tok</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">tok</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tok</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">tok</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</code></pre></div>
+</div>
+</div>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+      
+    </span>
+</div>
+    <script>var base_url = '../../..';</script>
+    <script src="../../../js/theme.js" defer></script>
+      <script src="../../../js/mkapi.js" defer></script>
+      <script src="../../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

@@ -69,6 +69,8 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../../dframeio/">dframeio</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../dframeio.filter/">dframeio.filter</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../../dframeio.abstract/">dframeio.abstract</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../../dframeio.parquet/">dframeio.parquet</a>
@@ -122,11 +124,16 @@
 </h1>
 
 <div class="mkapi-code">
-<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Implementation to access parquet datasets using pyarrow.&quot;&quot;&quot;</span>
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Access parquet datasets using pyarrow.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">dframeio.filter</span>
 
 <span class="kn">from</span> <span class="nn">.abstract</span> <span class="kn">import</span> <span class="n">AbstractDataFrameReader</span><span class="p">,</span> <span class="n">AbstractDataFrameWriter</span>
 
@@ -149,7 +156,8 @@
     <span class="sd">&quot;&quot;&quot;Backend to read and write parquet datasets</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        base_path:</span>
+<span class="sd">        base_path: Base path for the parquet files. Only files in this folder or</span>
+<span class="sd">            subfolders can be read from or written to.</span>
 <span class="sd">        partitions: (For writing only) Columns to use for partitioning.</span>
 <span class="sd">            If given, the write functions split the data into a parquet dataset.</span>
 <span class="sd">            Subfolders with the following naming schema are created when writing:</span>
@@ -158,7 +166,6 @@
 <span class="sd">            Per default data is written as a single file.</span>
 
 <span class="sd">            Cannot be combined with rows_per_file.</span>
-
 <span class="sd">        rows_per_file: (For writing only) If a positive integer value is given</span>
 <span class="sd">            this specifies the desired number of rows per file. The data is then</span>
 <span class="sd">            written to multiple files.</span>
@@ -209,8 +216,8 @@
 <span class="sd">        Args:</span>
 <span class="sd">            source: The path of the file or folder with a parquet dataset to read</span>
 <span class="sd">            columns: List of column names to limit the reading to</span>
-<span class="sd">            row_filter: Filter expression for selecting rows.</span>
-<span class="sd">            limit: Maximum number of rows to return (top-n)</span>
+<span class="sd">            row_filter: Filter expression for selecting rows</span>
+<span class="sd">            limit: Maximum number of rows to return (limit to first n rows)</span>
 <span class="sd">            sample: Size of a random sample to return</span>
 <span class="sd">            drop_duplicates: Whether to drop duplicate rows from the final selection</span>
 
@@ -223,23 +230,11 @@
 <span class="sd">        The logic of the filtering arguments is as documented for</span>
 <span class="sd">        [`AbstractDataFrameReader.read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">full_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_path</span><span class="p">)</span> <span class="o">/</span> <span class="n">source</span>
-        <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_path</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">full_path</span><span class="o">.</span><span class="n">parents</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The given source path </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> is not in base_path </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_path</span><span class="si">}</span><span class="s2">!&quot;</span>
-            <span class="p">)</span>
-        <span class="c1"># TODO: use read_pandas()</span>
-        <span class="c1">#   https://arrow.apache.org/docs/python/generated/pyarrow.parquet.read_pandas.html#pyarrow.parquet.read_pandas</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">full_path</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">use_threads</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_pandas_metadata</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">row_filter</span><span class="p">:</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">row_filter</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">limit</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">sample</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">df</span>
+        <span class="n">full_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validated_full_path</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parquet_table</span><span class="p">(</span>
+            <span class="n">full_path</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">row_filter</span><span class="o">=</span><span class="n">row_filter</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">sample</span><span class="o">=</span><span class="n">sample</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">read_to_dict</span><span class="p">(</span><span id="dframeio.parquet.ParquetBackend.read_to_dict"></span><a class="mkapi-docs-link" title="dframeio.parquet.ParquetBackend.read_to_dict" href="../../dframeio.parquet/#dframeio.parquet.ParquetBackend.read_to_dict">DOCS</a>
         <span class="bp">self</span><span class="p">,</span>
@@ -255,8 +250,8 @@
 <span class="sd">        Args:</span>
 <span class="sd">            source: The path of the file or folder with a parquet dataset to read</span>
 <span class="sd">            columns: List of column names to limit the reading to</span>
-<span class="sd">            row_filter: NOT IMPLEMENTED. Reserved keyword for filtering rows.</span>
-<span class="sd">            limit: Maximum number of rows to return (top-n)</span>
+<span class="sd">            row_filter: Filter expression for selecting rows</span>
+<span class="sd">            limit: Maximum number of rows to return (limit to first n rows)</span>
 <span class="sd">            sample: Size of a random sample to return</span>
 <span class="sd">            drop_duplicates: Whether to drop duplicate rows</span>
 
@@ -270,14 +265,10 @@
 <span class="sd">        [`AbstractDataFrameReader.read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">full_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validated_full_path</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">full_path</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">use_threads</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_pandas_metadata</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">to_pydict</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">row_filter</span><span class="p">:</span>
-            <span class="c1"># TODO: Pyarrow supports filtering on loading</span>
-            <span class="c1">#  https://arrow.apache.org/docs/python/generated/pyarrow.parquet.ParquetDataset.html</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Row filtering is not implemented for dicts&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">df</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parquet_table</span><span class="p">(</span>
+            <span class="n">full_path</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">row_filter</span><span class="o">=</span><span class="n">row_filter</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="n">sample</span><span class="o">=</span><span class="n">sample</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">to_pydict</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">write_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]]):</span><span id="dframeio.parquet.ParquetBackend.write_replace"></span><a class="mkapi-docs-link" title="dframeio.parquet.ParquetBackend.write_replace" href="../../dframeio.parquet/#dframeio.parquet.ParquetBackend.write_replace">DOCS</a>
         <span class="sd">&quot;&quot;&quot;Write data with full replacement of an existing dataset</span>
@@ -290,9 +281,10 @@
 <span class="sd">                in the format `column_name: [column_data]`</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">             ValueError: If the dataframe does not contain the columns to partition by</span>
+<span class="sd">            ValueError: If the dataframe does not contain the columns to partition by</span>
 <span class="sd">                as specified in the [`__init__()`](dframeio.parquet.ParquetBackend)</span>
 <span class="sd">                function.</span>
+<span class="sd">            TypeError: When the dataframe is neither an pandas.DataFrame nor a dictionary</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">full_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validated_full_path</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">full_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -327,24 +319,93 @@
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">pq</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span>
+                    <span class="n">arrow_table</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">full_path</span><span class="p">),</span> <span class="n">flavor</span><span class="o">=</span><span class="s2">&quot;spark&quot;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;snappy&quot;</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">write_append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]]):</span><span id="dframeio.parquet.ParquetBackend.write_append"></span><a class="mkapi-docs-link" title="dframeio.parquet.ParquetBackend.write_append" href="../../dframeio.parquet/#dframeio.parquet.ParquetBackend.write_append">DOCS</a>
+        <span class="sd">&quot;&quot;&quot;Write data in append-mode&quot;&quot;&quot;</span>
+        <span class="n">full_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validated_full_path</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">full_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+                <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">read_to_pandas</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">full_path</span><span class="p">)),</span> <span class="n">dataframe</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Mapping</span><span class="p">):</span>
+                <span class="n">old_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parquet_table</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="n">full_path</span><span class="p">),</span> <span class="n">use_pandas_metadata</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">to_pydict</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_remove_matching_keys</span><span class="p">(</span><span class="n">old_data</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;__index_level_\d+__&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">old_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Can only append with identical columns. &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Existing columns: </span><span class="si">{</span><span class="nb">set</span><span class="p">(</span><span class="n">old_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;New columns: </span><span class="si">{</span><span class="nb">set</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">dataframe</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">old_data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="n">dataframe</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">old_data</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;dataframe must be either a pandas.DataFrame or a dictionary. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Got type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="n">full_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_per_file</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">full_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">filename_index</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_rows</span><span class="p">(</span><span class="n">dataframe</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_per_file</span><span class="p">):</span>
+                <span class="k">while</span> <span class="p">(</span><span class="n">full_path</span> <span class="o">/</span> <span class="p">(</span><span class="n">full_path</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename_index</span><span class="p">)))</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                    <span class="n">filename_index</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">pq</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_dataframe_slice_as_arrow_table</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows_per_file</span><span class="p">),</span>
+                    <span class="n">where</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">full_path</span> <span class="o">/</span> <span class="p">(</span><span class="n">full_path</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename_index</span><span class="p">))),</span>
+                    <span class="n">flavor</span><span class="o">=</span><span class="s2">&quot;spark&quot;</span><span class="p">,</span>
+                    <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;snappy&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">filename_index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">arrow_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_arrow_table</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partitions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">missing_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_partitions</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">arrow_table</span><span class="o">.</span><span class="n">column_names</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">missing_columns</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Expected the dataframe to have the partition columns </span><span class="si">{</span><span class="n">missing_columns</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">pq</span><span class="o">.</span><span class="n">write_to_dataset</span><span class="p">(</span>
+                    <span class="n">arrow_table</span><span class="p">,</span>
+                    <span class="n">root_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">full_path</span><span class="p">),</span>
+                    <span class="n">partition_cols</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_partitions</span><span class="p">,</span>
+                    <span class="n">flavor</span><span class="o">=</span><span class="s2">&quot;spark&quot;</span><span class="p">,</span>
+                    <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;snappy&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pq</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span>
                     <span class="n">arrow_table</span><span class="p">,</span>
                     <span class="n">where</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">full_path</span><span class="p">),</span>
                     <span class="n">flavor</span><span class="o">=</span><span class="s2">&quot;spark&quot;</span><span class="p">,</span>
                     <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;snappy&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">write_append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]]):</span><span id="dframeio.parquet.ParquetBackend.write_append"></span><a class="mkapi-docs-link" title="dframeio.parquet.ParquetBackend.write_append" href="../../dframeio.parquet/#dframeio.parquet.ParquetBackend.write_append">DOCS</a>
-        <span class="sd">&quot;&quot;&quot;Write data in append-mode&quot;&quot;&quot;</span>
-        <span class="c1"># TODO: Implement</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_remove_matching_keys</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="n">collections</span><span class="o">.</span><span class="n">Mapping</span><span class="p">,</span> <span class="n">regex</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove all keys matching regex from the dictionary d&quot;&quot;&quot;</span>
+        <span class="n">compiled_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span>
+        <span class="n">keys_to_delete</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">compiled_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys_to_delete</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_n_rows</span><span class="p">(</span><span class="n">dataframe</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_n_rows</span><span class="p">(</span><span class="n">dataframe</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the number of rows in the dataframe</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Number of rows as int</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: When the dataframe is neither an pandas.DataFrame nor a dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Mapping</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;dataframe must be a pandas.DataFrame or dict&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;dataframe must be a pandas.DataFrame or dict&quot;</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_dataframe_slice_as_arrow_table</span><span class="p">(</span>
@@ -380,6 +441,38 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Mapping</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">pa</span><span class="o">.</span><span class="n">Table</span><span class="o">.</span><span class="n">from_pydict</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;dataframe must be a pandas.DataFrame or dict&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_read_parquet_table</span><span class="p">(</span>
+        <span class="n">full_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">row_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">sample</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">use_pandas_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pa</span><span class="o">.</span><span class="n">Table</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read a parquet dataset from disk into a parquet.Table object</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            source: The full path of the file or folder with a parquet dataset to read</span>
+<span class="sd">            columns: List of column names to limit the reading to</span>
+<span class="sd">            row_filter: Filter expression for selecting rows</span>
+<span class="sd">            limit: Maximum number of rows to return (limit to first n rows)</span>
+<span class="sd">            use_pandas_metadata: Whether to read also pandas data such as index columns</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Content of the file as a pyarrow Table</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">use_threads</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_pandas_metadata</span><span class="o">=</span><span class="n">use_pandas_metadata</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">row_filter</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;filters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dframeio</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">to_pyarrow_dnf</span><span class="p">(</span><span class="n">row_filter</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">full_path</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">limit</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">num_rows</span><span class="p">,</span> <span class="n">limit</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">sample</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">num_rows</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">num_rows</span><span class="p">,</span> <span class="n">sample</span><span class="p">))</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span>
 </code></pre></div>
 </div>
 </div>

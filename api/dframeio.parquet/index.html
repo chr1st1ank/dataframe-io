@@ -69,6 +69,8 @@
     <ul class="current">
                 <li class="toctree-l2"><a class="reference internal" href="../dframeio/">dframeio</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../dframeio.filter/">dframeio.filter</a>
+                </li>
                 <li class="toctree-l2"><a class="reference internal" href="../dframeio.abstract/">dframeio.abstract</a>
                 </li>
                 <li class="toctree-l2 current"><a class="reference internal current" href="./">dframeio.parquet</a>
@@ -148,7 +150,7 @@
 </div>
 <div class="mkapi-docstring">
 <div class="mkapi-section">
-      <div class="mkapi-section-body"><p>Implementation to access parquet datasets using pyarrow.</p></div>
+      <div class="mkapi-section-body"><p>Access parquet datasets using pyarrow.</p></div>
     </div>
   <div class="mkapi-section classes">
       <div class="mkapi-section-name classes">
@@ -195,6 +197,10 @@
           <span class="mkapi-section-name-body parameters">Parameters</span> 
         </div>
       <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">base_path</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Base path for the parquet files. Only files in this folder or
+subfolders can be read from or written to.</span></li>
 
 <li><code class="mkapi-item-name">partitions</code>
 <span class="mkapi-item-type">(iterable of str, optional)</span>
@@ -291,11 +297,11 @@ value ranges or if conflicting arguments are given.</span></li>
 
 <li><code class="mkapi-item-name">row_filter</code>
 <span class="mkapi-item-type">(str, optional)</span>
-<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Filter expression for selecting rows.</span></li>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Filter expression for selecting rows</span></li>
 
 <li><code class="mkapi-item-name">limit</code>
 <span class="mkapi-item-type">(int, optional)</span>
-<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Maximum number of rows to return (top-n)</span></li>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Maximum number of rows to return (limit to first n rows)</span></li>
 
 <li><code class="mkapi-item-name">sample</code>
 <span class="mkapi-item-type">(int, optional)</span>
@@ -365,11 +371,11 @@ value ranges or if conflicting arguments are given.</span></li>
 
 <li><code class="mkapi-item-name">row_filter</code>
 <span class="mkapi-item-type">(str, optional)</span>
-<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">NOT IMPLEMENTED. Reserved keyword for filtering rows.</span></li>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Filter expression for selecting rows</span></li>
 
 <li><code class="mkapi-item-name">limit</code>
 <span class="mkapi-item-type">(int, optional)</span>
-<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Maximum number of rows to return (top-n)</span></li>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Maximum number of rows to return (limit to first n rows)</span></li>
 
 <li><code class="mkapi-item-name">sample</code>
 <span class="mkapi-item-type">(int, optional)</span>
@@ -448,6 +454,10 @@ in the format <code>column_name: [column_data]</code></span></li>
           <span class="mkapi-section-name-body raises">Raises</span> 
         </div>
       <div class="mkapi-section-body raises"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">TypeError</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">When the dataframe is neither an pandas.DataFrame nor a dictionary</span></li>
+
 <li><code class="mkapi-item-name">ValueError</code>
 
 <span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">If the dataframe does not contain the columns to partition by
