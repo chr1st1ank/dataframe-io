@@ -102,13 +102,11 @@ Before you submit a pull request, check that it meets these guidelines:
 ## Deploying
 
 A reminder for the maintainers on how to deploy.
-Make sure all your changes are committed (including an entry in HISTORY.md).
-Then run:
 
-```
-$ poetry patch # possible: major / minor / patch
-$ git push
-$ git push --tags
-```
-
-Github actions will then deploy to PyPI if tests pass.
+On branch "main":
+- Adjust CHANGELOG.md as described on https://keepachangelog.com
+- Adjust the version number in dframeio/__init__.py
+- Then run `poetry version [major | minor | patch]`
+- Commit and push the changes
+- Create a github release and watch the [release workflow](https://github.com/chr1st1ank/dataframe-io/actions/workflows/release.yml)
+  publishing the documentation and the PyPI package.

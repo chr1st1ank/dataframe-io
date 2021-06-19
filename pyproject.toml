@@ -1,7 +1,7 @@
 [tool]
 [tool.poetry]
 name = "dframeio"
-version = "0.1.1"
+version = "0.2.0"
 homepage = "https://github.com/chr1st1ank/dataframe-io"
 description = "Read and write dataframes anywhere."
 authors = ["Christian Krudewig <chr1st1ank@krudewig-online.de>"]

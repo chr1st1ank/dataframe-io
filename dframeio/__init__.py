@@ -1,7 +1,6 @@
 """Top-level package for dataframe-io."""
 
-__version__ = "0.1.0"
-
+__version__ = "0.2.0"
 
 # Add Backends one by one if dependencies are available
 backends = []
