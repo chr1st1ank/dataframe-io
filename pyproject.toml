@@ -26,10 +26,13 @@ packages = [
 python = ">=3.7.1,<4.0"
 pandas = ">=1.0.0,<2.0"
 pyarrow = { version = "^4.0.0", optional = true }
+psycopg = { version = "^3.0.1", optional = true }
 lark-parser = "^0.11.3"
 
 [tool.poetry.extras]
-pyarrow = ["pyarrow"]
+pyarrow = ["pyarrow"]   # For backward compatibility
+parquet = ["pyarrow"]
+postgres = ["psycopg"]
 
 test = [
     "pytest",
@@ -75,6 +78,7 @@ pylint-junit = "*"
 #railroad-diagrams = "^1.1.0"  # This is only for pyparsing[diagrams]
 #Jinja2 = "^3.0.1"  # This is only for pyparsing[diagrams]
 pydot = "^1.4.2"
+psycopg = "^3.0.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
