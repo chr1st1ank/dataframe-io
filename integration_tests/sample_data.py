@@ -1,9 +1,10 @@
 """Test dataset and schema for integration tests with multiple backends"""
 from datetime import datetime, timedelta
-from typing import List
+from typing import Dict, List
 
 import pandas as pd
 import pandera as pa
+from pandas.util.testing import assert_frame_equal
 
 
 class SampleDataSchema(pa.SchemaModel):
@@ -21,34 +22,50 @@ class SampleDataSet:
     """Test dataset with popular data types and some edge cases"""
 
     def __init__(self, data: pd.DataFrame = None):
-        self._data = data or pd.DataFrame(
-            {
-                "timedelta": [
-                    timedelta(seconds=s) if isinstance(s, int) else s
-                    for s in [50, None, 40, 30, 20, 10, timedelta(milliseconds=10000)]
-                ],
-                "datetime": [
-                    datetime.fromisoformat(d) if isinstance(d, str) else d
-                    for d in [
-                        "2000-12-01T13:44:50Z",
-                        None,
-                        "2000-12-01T13:44:50+01:00",
-                        "2000-12-04T13:44:50",
-                        "2000-12-05T13:44:50",
-                        "2000-12-06T13:44:50",
-                        "2000-12-07T13:44:50",
-                        "2000-12-07T13:44:50",
-                    ]
-                ],
-                "bool": [True, None, False, False, False, False, False, False],
-                "int": [1, None, 2, 3, 4, 5, 16, 0x10],
-                "string": ["one", None, "two", "three", "four", "five", "six", "six"],
-                "float": [1.0, None, float("inf"), float("nan"), 4.1, 5.01, 0.02, 2e-2],
-            }
+        self._data: pd.DataFrame = (
+            data
+            if data is not None
+            else pd.DataFrame(
+                {
+                    "col_timedelta": [
+                        timedelta(seconds=s) if isinstance(s, int) else s
+                        for s in [60, 50, 40, 30, 20, 10, timedelta(milliseconds=10000)]
+                    ],
+                    "col_datetime": pd.to_datetime(
+                        [
+                            datetime.fromisoformat(d) if isinstance(d, str) else d
+                            for d in [
+                                "2000-12-01T13:44:50",
+                                "2000-12-01T13:44:50",
+                                "2000-12-04T13:44:50",
+                                "2000-12-05T13:44:50",
+                                "2000-12-06T13:44:50",
+                                "2000-12-07T13:44:50",
+                                "2000-12-07T13:44:50",
+                            ]
+                        ]
+                    ),
+                    "col_bool": [True, False, False, False, False, False, False],
+                    "col_int": [1, 2, 3, 4, 5, 16, 0x10],
+                    "col_string": ["one", "two", "three", "four", "five", "six", "six"],
+                    "col_float": [1.0, float("inf"), float("nan"), 4.1, 5.01, 0.02, 2e-2],
+                },
+            )
         )
-        assert SampleDataSchema.to_schema().validate(self._data)
+        SampleDataSchema.to_schema().validate(self._data)
 
-    def length(self):
+    def dataframe(self) -> pd.DataFrame:
+        return self._data.copy()
+
+    def datadict(self) -> Dict[str, List]:
+        return self._data.to_dict(orient="list")
+
+    def assert_correct_and_equal(self, other: pd.DataFrame):
+        """Check the schema of other and compare it to the sample dataset"""
+        SampleDataSchema.to_schema().validate(other)
+        assert_frame_equal(self._data, other)
+
+    def length(self) -> int:
         """Number of rows in the data"""
         return len(self._data)
 
