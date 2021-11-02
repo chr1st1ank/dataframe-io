@@ -21,7 +21,7 @@ Column names can but don't have to be quoted with SQL quotes (backticks). E.g.:
 ```
 """
 from dataclasses import dataclass
-from typing import Any, List, Tuple, Type, Union
+from typing import Any, List, Tuple, Union
 
 import lark
 
@@ -75,7 +75,7 @@ lark_grammar = r"""
 """
 
 
-def _make_parser(transformer: Type[lark.Transformer]):
+def _make_parser(transformer: lark.Transformer):
     return lark.Lark(
         lark_grammar,
         start="boolean_value_exp",
@@ -173,7 +173,7 @@ class _PyarrowDNFTransformer(lark.Transformer):
     class Or:
         operands: list
 
-        def format(self) -> List[List[Tuple]]:
+        def format(self) -> List[List[Tuple[str, str, Any]]]:
             disjunction = []
             for o in self.operands:
                 if isinstance(o, _PyarrowDNFTransformer.And):
@@ -192,7 +192,7 @@ class _PyarrowDNFTransformer(lark.Transformer):
     class And:
         operands: list
 
-        def format(self) -> List[Tuple]:
+        def format(self) -> List[Tuple[str, str, Any]]:
             conjunction = []
             for o in self.operands:
                 if isinstance(o, _PyarrowDNFTransformer.Condition):
@@ -209,7 +209,7 @@ class _PyarrowDNFTransformer(lark.Transformer):
         operator: str
         value: Union[str, int, float]
 
-        def format(self) -> Tuple:
+        def format(self) -> Tuple[str, str, Any]:
             if not isinstance(self.key, _PyarrowDNFTransformer.Column):
                 raise ValueError(
                     "For pyarrow only comparisons of the form `key <operator> value`"
@@ -272,7 +272,12 @@ def _raise_error(e: Exception):
     raise e
 
 
-def to_pyarrow_dnf(statement: str) -> List[List[Tuple[str, str, Any]]]:
+PyArrowDNFType = Union[
+    List[List[Tuple[str, str, Any]]], List[Tuple[str, str, Any]], Tuple[str, str, Any]
+]
+
+
+def to_pyarrow_dnf(statement: str) -> PyArrowDNFType:
     """Convert a filter statement to the disjunctive normal form understood by pyarrow
 
     Predicates are expressed in disjunctive normal form (DNF), like `[[('x', '=', 0), ...], ...]`.
@@ -300,7 +305,7 @@ def to_pyarrow_dnf(statement: str) -> List[List[Tuple[str, str, Any]]]:
 
         >>> to_pyarrow_dnf("a > 1 and b <= 3 or c = 'abc'")
         [[('a', '>', 1), ('b', '<=', 3)], [('c', '=', 'abc')]]
-    """  # noqa: E501
+    """  # noqa: E501 - Flake8 line-to-long: The link above cannot be shortened.
     parser = _make_parser(_PyarrowDNFTransformer())
     predicate = parser.parse(statement, on_error=_raise_error)
     if isinstance(predicate, _PyarrowDNFTransformer.Condition):
@@ -312,17 +317,87 @@ def to_pyarrow_dnf(statement: str) -> List[List[Tuple[str, str, Any]]]:
     raise ValueError(f"Invalid statement {statement}")
 
 
-class _SQLTransformer(lark.Transformer):
-    """__INCOMPLETE__ lark.Transformer to translate to SQL"""
+class _PSQLTransformer(lark.Transformer):
+    """lark.Transformer to translate the grammar into PostgreSQL"""
 
-    # pylint: disable=missing-function-docstring,no-self-use
-    def SIGNED_NUMBER(self, tok):
+    # pylint: disable=missing-function-docstring,missing-class-docstring,no-self-use
+
+    def and_operation(self, operands: lark.Token):
+        left, right = tuple(operands)
+        if "OR" in left:
+            left = f"({left})"
+        if "OR" in right:
+            right = f"({right})"
+        return f"{left} AND {right}"
+
+    def or_operation(self, operands: lark.Token):
+        left, right = tuple(operands)
+        return f"{left} OR {right}"
+
+    @lark.v_args(inline=True)
+    def comparison(self, left: lark.Token, operator: lark.Token, right: lark.Token):
+        op = "<>" if operator.value == "!=" else operator.value
+        return f"{left} {op} {right}"
+
+    @lark.v_args(inline=True)
+    def null_comparison(self, operand: lark.Token, operator: lark.Token):
+        if operator.type == "ISNULL":
+            return f"{operand} IS NULL"
+        if operator.type == "NOTNULL":
+            return f"{operand} IS NOT NULL"
+        raise lark.ParseError("Invalid NULL comparison")
+
+    @lark.v_args(inline=True)
+    def negation(self, expression: lark.Token):
+        return f"NOT {expression}"
+
+    @lark.v_args(inline=True)
+    def notin_list(self, column: lark.Token, _: lark.Token, lst: lark.Token):
+        return f"{column} NOT IN {lst}"
+
+    @lark.v_args(inline=True)
+    def in_list(self, column: lark.Token, lst: lark.Token):
+        return f"{column} IN {lst}"
+
+    def literal_list(self, members: lark.Token):
+        return f"({','.join(list(members))})"
+
+    def UNQUOTED_COLUMNNAME(self, name: lark.Token):
+        return f'"{name.value}"'
+
+    def ESCAPED_STRING(self, tok: lark.Token):
+        assert len(tok) > 1 and (tok[0] == tok[-1] == "'" or tok[0] == tok[-1] == '"')
+        return f"'{tok[1:-1]}'"
+
+    def SIGNED_NUMBER(self, tok: lark.Token):
         """Convert the value of `tok` from string to number"""
         try:
-            return tok.update(value=int(tok))
+            return str(int(tok))
         except ValueError:
-            return tok.update(value=float(tok))
+            return str(float(tok))
 
-    def ESCAPED_STRING(self, tok):
-        assert len(tok) > 1 and (tok[0] == tok[-1] == "'" or tok[0] == tok[-1] == '"')
-        return tok.update(value=tok[1:-1])
+
+def to_psql(statement: str) -> str:
+    """Convert a filter statement to Postgres SQL syntax
+
+    Args:
+        statement: A filter predicate as string
+
+    Returns:
+        The filter statement converted to psql.
+
+    Raises:
+        ValueError: If the statement cannot be parsed
+
+    Examples:
+        >>> to_psql("a.column != 0")
+        '"a.column" <> 0'
+
+        >>> to_psql("a > 1 and b <= 3")
+        '"a" > 1 AND "b" <= 3'
+
+        >>> to_psql("a > 1 and b <= 3 or c = 'abc'")
+        '"a" > 1 AND "b" <= 3 OR "c" = \\\'abc\\\''
+    """
+    parser = _make_parser(_PSQLTransformer())
+    return parser.parse(statement, on_error=_raise_error)

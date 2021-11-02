@@ -109,3 +109,45 @@ def test_to_pyarrow_dnf_errors(expression):
     """Try some normally correct expressions which are not supported by pyarrow"""
     with pytest.raises(ValueError):
         print(dframeio.filter.to_pyarrow_dnf(expression))
+
+
+@pytest.mark.parametrize(
+    "expression, expected_psql",
+    [
+        ("A > 5", '"A" > 5'),
+        ("`A` > 5", '"A" > 5'),
+        ("A >= 5", '"A" >= 5'),
+        ("A < 5", '"A" < 5'),
+        ("A <= 5", '"A" <= 5'),
+        ("A != 5", '"A" <> 5'),
+        ("A = 5.5", '"A" = 5.5'),
+        ("A IS NULL", '"A" IS NULL'),
+        ("A IS NOT NULL", '"A" IS NOT NULL'),
+        ("A = 'xyz'", "\"A\" = 'xyz'"),
+        ('A = "xyz"', "\"A\" = 'xyz'"),
+        ("a in ('RED','GREEN','BLUE')", "\"a\" IN ('RED','GREEN','BLUE')"),
+        ("a not in ('RED','GREEN','BLUE')", "\"a\" NOT IN ('RED','GREEN','BLUE')"),
+        ("a in (10,20, 30)", '"a" IN (10,20,30)'),
+        (
+            "a in ('RED','GREEN','BLUE') and b >2",
+            "\"a\" IN ('RED','GREEN','BLUE') AND \"b\" > 2",
+        ),
+        ("a < 1 OR b > 2", '"a" < 1 OR "b" > 2'),
+        ("a < 1 OR b > 2 AND c=0", '"a" < 1 OR "b" > 2 AND "c" = 0'),
+        (
+            "a in ('RED','GREEN','BLUE') and b.c in (10,20,30) OR d = 5",
+            "\"a\" IN ('RED','GREEN','BLUE') AND \"b.c\" IN (10,20,30) OR \"d\" = 5",
+        ),
+        ("A < B", '"A" < "B"'),
+        ("NOT A > 5", 'NOT "A" > 5'),
+        ("table1.id = table2.id", '"table1.id" = "table2.id"'),
+        (
+            "a in ('RED','GREEN','BLUE') and (b.c in (10,20,30) OR d = 5)",
+            "\"a\" IN ('RED','GREEN','BLUE') AND (\"b.c\" IN (10,20,30) OR \"d\" = 5)",
+        ),
+    ],
+)
+def test_to_psql(expression, expected_psql):
+    """Examples for to_psql()"""
+    psql = dframeio.filter.to_psql(expression)
+    assert psql == expected_psql
