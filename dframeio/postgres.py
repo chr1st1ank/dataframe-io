@@ -6,6 +6,7 @@ import pandas as pd
 import psycopg
 import psycopg.sql as psql
 
+from . import filter
 from .abstract import AbstractDataFrameReader, AbstractDataFrameWriter
 
 
@@ -26,7 +27,7 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
 
     _connection: psycopg.Connection
 
-    def __init__(self, conninfo: str = None, *, autocommit=False):
+    def __init__(self, conninfo: str = None, *, autocommit=True):
         super().__init__()
         self._connection = psycopg.connect(conninfo=conninfo, autocommit=autocommit)
 
@@ -58,18 +59,50 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         The logic of the filtering arguments is as documented for
         [`AbstractDataFrameReader.read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).
         """
+        if isinstance(columns, str):
+            raise TypeError(f"'columns' must be a list of column names. Got '{columns}'")
         if limit != -1 and sample != -1:
-            raise ValueError()  # TODO
-        columns_clause = ",".join(len(columns) * ["%s"]) if columns else "*"
-        where_clause = f" WHERE {row_filter}" if row_filter else ""
-        limit_clause = f" LIMIT {int(limit)}" if limit != -1 else ""
-        sample_clause = (
-            f" ORDER BY RANDOM() LIMIT {int(sample)}" if sample != -1 and not limit_clause else ""
+            sample = min(limit, sample)
+            limit = -1
+        table = psql.Identifier(source)
+        columns_clause = (
+            psql.SQL(",").join([psql.Identifier(c) for c in columns]) if columns else psql.SQL("*")
         )
-        query = (
-            f"SELECT {columns_clause} FROM %s{where_clause}{sample_clause}{limit_clause};" % source
+        if row_filter:
+            psql_filter = filter.to_psql(row_filter)
+            where_clause = psql.SQL(f" WHERE {psql_filter}")
+        else:
+            where_clause = ""
+        if limit != -1:
+            if not isinstance(limit, int):
+                raise TypeError(f"'limit' must be a positive integer. Got {limit}")
+            limit_clause = psql.SQL(" LIMIT {limit}").format(limit=limit)
+        else:
+            limit_clause = ""
+        if sample != -1:
+            if not isinstance(sample, int):
+                raise TypeError(f"'limit' must be a positive integer. Got {sample}")
+            sample_clause = psql.SQL(" ORDER BY RANDOM() LIMIT {sample}").format(sample=sample)
+        else:
+            sample_clause = ""
+
+        query = psql.SQL(" ").join(
+            [
+                x
+                for x in [
+                    psql.SQL("SELECT"),
+                    columns_clause,
+                    psql.SQL("FROM"),
+                    table,
+                    where_clause,
+                    sample_clause,
+                    limit_clause,
+                ]
+                if x
+            ]
         )
-        dataframe = pd.read_sql_query(query, self._connection)  # , params=[source])
+
+        dataframe = pd.read_sql_query(query, self._connection)
         if drop_duplicates:
             return dataframe.drop_duplicates()
         return dataframe
