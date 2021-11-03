@@ -98,6 +98,8 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         df = self._read_parquet_table(
             full_path, columns=columns, row_filter=row_filter, limit=limit, sample=sample
         )
+        if drop_duplicates:
+            return df.to_pandas().drop_duplicates()
         return df.to_pandas()
 
     def read_to_dict(
@@ -308,7 +310,7 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
 
     @staticmethod
     def _read_parquet_table(
-        full_path: str,
+        full_path: Union[str, Path],
         columns: List[str] = None,
         row_filter: str = None,
         limit: int = -1,
