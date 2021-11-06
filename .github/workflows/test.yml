@@ -24,7 +24,20 @@ jobs:
             tox-full-run: true
             pytesttargets: tests integration_tests
     runs-on: ${{ matrix.os }}
-
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_PASSWORD: example
+          POSTGRES_USER: user1
+          PGDATA: /srv
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -44,6 +57,8 @@ jobs:
 
       - name: Lint and test with tox
         if: ${{ matrix.tox-full-run }}
+        env:
+          PYTESTTARGETS: ${{ matrix.pytesttargets }}
         run:
           poetry run tox
 
