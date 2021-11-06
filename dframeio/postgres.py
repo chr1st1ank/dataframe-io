@@ -6,8 +6,8 @@ import pandas as pd
 import psycopg
 import psycopg.sql as psql
 
-from . import filter
 from .abstract import AbstractDataFrameReader, AbstractDataFrameWriter
+from .filter import to_psql
 
 
 class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
@@ -59,33 +59,41 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         The logic of the filtering arguments is as documented for
         [`AbstractDataFrameReader.read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).
         """
-        if isinstance(columns, str):
-            raise TypeError(f"'columns' must be a list of column names. Got '{columns}'")
+        query = self._make_psql_query(source, columns, row_filter, limit, sample)
+
+        dataframe = pd.read_sql_query(query, self._connection)
+        if drop_duplicates:
+            return dataframe.drop_duplicates()
+        return dataframe
+
+    def _make_psql_query(
+        self,
+        source: str,
+        columns: List[str] = None,
+        row_filter: str = None,
+        limit: int = -1,
+        sample: int = -1,
+    ) -> psql.SQL:
+        """Compose a full SQL query from the information given in the arguments.
+
+        Args:
+            source: The table name (may include a database name)
+            columns: List of column names to limit the reading to
+            row_filter: Filter expression for selecting rows
+            limit: Maximum number of rows to return (limit to first n rows)
+            sample: Size of a random sample to return
+
+        Returns:
+            Prepared query for psycopg
+        """
         if limit != -1 and sample != -1:
             sample = min(limit, sample)
             limit = -1
         table = psql.Identifier(source)
-        columns_clause = (
-            psql.SQL(",").join([psql.Identifier(c) for c in columns]) if columns else psql.SQL("*")
-        )
-        if row_filter:
-            psql_filter = filter.to_psql(row_filter)
-            where_clause = psql.SQL(f" WHERE {psql_filter}")
-        else:
-            where_clause = ""
-        if limit != -1:
-            if not isinstance(limit, int):
-                raise TypeError(f"'limit' must be a positive integer. Got {limit}")
-            limit_clause = psql.SQL(" LIMIT {limit}").format(limit=limit)
-        else:
-            limit_clause = ""
-        if sample != -1:
-            if not isinstance(sample, int):
-                raise TypeError(f"'limit' must be a positive integer. Got {sample}")
-            sample_clause = psql.SQL(" ORDER BY RANDOM() LIMIT {sample}").format(sample=sample)
-        else:
-            sample_clause = ""
-
+        columns_clause = self._make_columns_clause(columns)
+        where_clause = self._make_where_clause(row_filter)
+        limit_clause = self._make_limit_clause(limit)
+        sample_clause = self._make_sample_clause(sample)
         query = psql.SQL(" ").join(
             [
                 x
@@ -101,11 +109,42 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
                 if x
             ]
         )
+        return query
 
-        dataframe = pd.read_sql_query(query, self._connection)
-        if drop_duplicates:
-            return dataframe.drop_duplicates()
-        return dataframe
+    @staticmethod
+    def _make_where_clause(row_filter: str = None) -> psql.SQL:
+        """Create a psql WHERE clause from dframeio's standard SQL syntax"""
+        if row_filter:
+            psql_filter = to_psql(row_filter)
+            return psql.SQL(f" WHERE {psql_filter}")
+        return psql.SQL("")
+
+    @staticmethod
+    def _make_columns_clause(columns: List[str]) -> psql.SQL:
+        """Create the list of columns for a select statement in psql syntax"""
+        if isinstance(columns, str):
+            raise TypeError(f"'columns' must be a list of column names. Got '{columns}'")
+        return (
+            psql.SQL(",").join([psql.Identifier(c) for c in columns]) if columns else psql.SQL("*")
+        )
+
+    @staticmethod
+    def _make_sample_clause(sample: int) -> psql.Composed:
+        """Create a sample clause in psql syntax if limit != -1, otherwise return empty clause"""
+        if sample != -1:
+            if not isinstance(sample, int):
+                raise TypeError(f"'limit' must be a positive integer. Got {sample}")
+            return psql.SQL(" ORDER BY RANDOM() LIMIT {sample}").format(sample=sample)
+        return psql.Composed([])
+
+    @staticmethod
+    def _make_limit_clause(limit: int) -> psql.Composed:
+        """Create a limit clause in psql syntax if limit != -1, otherwise return empty clause"""
+        if limit != -1:
+            if not isinstance(limit, int):
+                raise TypeError(f"'limit' must be a positive integer. Got {limit}")
+            return psql.SQL(" LIMIT {limit}").format(limit=limit)
+        return psql.Composed([])
 
     #
     # def read_to_dict(
