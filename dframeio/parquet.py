@@ -124,9 +124,6 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         Returns:
             A dictionary with column names as key and a list with column values as values
 
-        Raises:
-            NotImplementedError: If row_filter is given, because this is not yet implemented
-
         The logic of the filtering arguments is as documented for
         [`AbstractDataFrameReader.read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).
         """
@@ -134,6 +131,7 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         df = self._read_parquet_table(
             full_path, columns=columns, row_filter=row_filter, limit=limit, sample=sample
         )
+        # TODO: drop_duplicates is not implemented, or?
         return df.to_pydict()
 
     def write_replace(self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List]]):
