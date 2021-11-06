@@ -14,3 +14,13 @@ except ModuleNotFoundError as e:
         pass
     else:
         raise
+
+try:
+    from dframeio.postgres import PostgresBackend
+
+    backends.append(PostgresBackend)
+except ModuleNotFoundError as e:
+    if e.name == "psycopg":
+        pass
+    else:
+        raise

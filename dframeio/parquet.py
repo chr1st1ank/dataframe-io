@@ -98,6 +98,8 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         df = self._read_parquet_table(
             full_path, columns=columns, row_filter=row_filter, limit=limit, sample=sample
         )
+        if drop_duplicates:
+            return df.to_pandas().drop_duplicates()
         return df.to_pandas()
 
     def read_to_dict(
@@ -117,17 +119,19 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
             row_filter: Filter expression for selecting rows
             limit: Maximum number of rows to return (limit to first n rows)
             sample: Size of a random sample to return
-            drop_duplicates: Whether to drop duplicate rows
+            drop_duplicates: (Not supported!) Whether to drop duplicate rows
 
         Returns:
             A dictionary with column names as key and a list with column values as values
 
         Raises:
-            NotImplementedError: If row_filter is given, because this is not yet implemented
+            NotImplementedError: When drop_duplicates is specified
 
         The logic of the filtering arguments is as documented for
         [`AbstractDataFrameReader.read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).
         """
+        if drop_duplicates:
+            raise NotImplementedError("drop_duplicates not available for Parquet -> dict")
         full_path = self._validated_full_path(source)
         df = self._read_parquet_table(
             full_path, columns=columns, row_filter=row_filter, limit=limit, sample=sample
@@ -308,7 +312,7 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
 
     @staticmethod
     def _read_parquet_table(
-        full_path: str,
+        full_path: Union[str, Path],
         columns: List[str] = None,
         row_filter: str = None,
         limit: int = -1,

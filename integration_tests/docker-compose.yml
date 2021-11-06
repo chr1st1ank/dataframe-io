@@ -1,0 +1,11 @@
+version: '2.4'
+services:
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_USER: user1
+      PGDATA: /srv
+    ports:
+      - 5432:5432
