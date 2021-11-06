@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Added
+- Support for PostgreSQL
+
 ### Fixed
 - Package is installable without pyarrow now
 

@@ -95,18 +95,18 @@ Before you submit a pull request, check that it meets these guidelines:
 2. If the pull request adds functionality, the docs should be updated. Put
    your new functionality into a function with a docstring, and add the
    feature to the list in README.md.
-3. The pull request should work for CPython 3.7, 3.8 and 3.9. Check
-   https://github.com/chr1st1ank/dframeio/actions
-   and make sure that the tests pass for all supported Python versions.
+3. The pull request should work for CPython 3.7, 3.8, 3.9 and 3.10.
+   Make sure that the tests pass for all supported Python versions.
 
 ## Deploying
 
 A reminder for the maintainers on how to deploy.
 
 On branch "main":
-- Adjust CHANGELOG.md as described on https://keepachangelog.com
-- Adjust the version number in dframeio/__init__.py
-- Then run `poetry version [major | minor | patch]`
-- Commit and push the changes
+
+- Adjust CHANGELOG.md as described on [https://keepachangelog.com](https://keepachangelog.com).
+- Adjust the version number in dframeio/__init__.py.
+- Then run `poetry version [major | minor | patch]`.
+- Commit and push the changes.
 - Create a github release and watch the [release workflow](https://github.com/chr1st1ank/dataframe-io/actions/workflows/release.yml)
   publishing the documentation and the PyPI package.

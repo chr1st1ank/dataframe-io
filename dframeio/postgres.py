@@ -1,4 +1,4 @@
-"""Access parquet datasets using pyarrow.
+"""Access PostgreSQL databases using psycopg3.
 """
 from typing import Dict, List, Union
 
@@ -14,8 +14,8 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
     """Backend to read and write PostgreSQL tables
 
     Args:
-        conninfo: Connection string in libq format. See
-            https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
+        conninfo: Connection string in libq format. See the [PostgreSQL docs][1]
+            for details.
         connection_factory: Alternative way of connecting is to provide a function returning
             an already established connection.
 
@@ -23,6 +23,8 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
          ValueError: If any of the input arguments are outside of the documented
             value ranges or if conflicting arguments are given.
          TypeError: If any of the input arguments has a diffent type as documented
+
+    [1]: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
     """
 
     _connection: psycopg.Connection
@@ -58,7 +60,7 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
             ValueError: If path specified with `source` is outside of the base path
 
         The logic of the filtering arguments is as documented for
-        [`AbstractDataFrameReader.read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).
+        [`read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).
         """
         query = self._make_psql_query(source, columns, row_filter, limit, sample, drop_duplicates)
 

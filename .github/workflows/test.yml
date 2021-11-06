@@ -77,7 +77,8 @@ jobs:
           fail_ci_if_error: true
           files: coverage.xml
 
-  cross-platform-test:
+  cross_platform_test:
+    needs: test
     strategy:
       matrix:
         python-version: [3.9, 3.8]
@@ -99,7 +100,7 @@ jobs:
 
   publish_dev_build:
     # if test failed, we should not publish
-    needs: test
+    needs: [test, cross_platform_test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
