@@ -1,6 +1,6 @@
 """Test dataset and schema for integration tests with multiple backends"""
 from datetime import datetime, timedelta
-from typing import Dict, List
+from typing import Dict, List, Union
 
 import pandas as pd
 import pandera as pa
@@ -52,7 +52,7 @@ class SampleDataSet:
                 },
             )
         )
-        SampleDataSchema.to_schema().validate(self._data)
+        SampleDataSchema.to_schema().select_columns(self._data.columns).validate(self._data)
 
     def dataframe(self) -> pd.DataFrame:
         return self._data.copy()
@@ -60,12 +60,22 @@ class SampleDataSet:
     def datadict(self) -> Dict[str, List]:
         return self._data.to_dict(orient="list")
 
-    def assert_correct_and_equal(self, other: pd.DataFrame):
+    def assert_correct_and_equal(self, other: Union[pd.DataFrame, dict]):
         """Check the schema of other and compare it to the sample dataset"""
-        SampleDataSchema.to_schema().validate(other)
-        assert_frame_equal(self._data, other)
+        if isinstance(other, dict):
+            other = pd.DataFrame.from_records(other)
+        if not isinstance(other, pd.DataFrame):
+            raise TypeError("other must be a dataframe or a dict!")
+        # Sort cols
+        cols = list(self._data.columns) + [c for c in other.columns if c not in self._data.columns]
+        other = other[cols]
+        SampleDataSchema.to_schema().select_columns(self._data.columns).validate(other)
+        assert_frame_equal(
+            self._data.sort_values(by=list(self._data.columns)).reset_index(drop=True),
+            other.sort_values(by=list(self._data.columns)).reset_index(drop=True),
+        )
 
-    def length(self) -> int:
+    def __len__(self) -> int:
         """Number of rows in the data"""
         return len(self._data)
 
@@ -83,8 +93,8 @@ class SampleDataSet:
 
     def where_int_greater_equal_3(self) -> "SampleDataSet":
         """Dataset with rows where col_int >= 3"""
-        return SampleDataSet(self._data.query("int >= 3"))
+        return SampleDataSet(self._data.query("col_int >= 3").reset_index(drop=True))
 
-    def where_not_null(self) -> "SampleDataSet":
+    def where_not_null(self, fields) -> "SampleDataSet":
         """Dataset with rows where not all fields are NULL"""
-        return SampleDataSet(self._data.dropna())
+        return SampleDataSet(self._data.dropna(subset=fields))
