@@ -26,6 +26,7 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
     """
 
     _connection: psycopg.Connection
+    _batch_size: int = 1000
 
     def __init__(self, conninfo: str = None, *, autocommit=True):
         super().__init__()
@@ -59,12 +60,54 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         The logic of the filtering arguments is as documented for
         [`AbstractDataFrameReader.read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).
         """
-        query = self._make_psql_query(source, columns, row_filter, limit, sample)
+        query = self._make_psql_query(source, columns, row_filter, limit, sample, drop_duplicates)
 
         dataframe = pd.read_sql_query(query, self._connection)
         if drop_duplicates:
             return dataframe.drop_duplicates()
         return dataframe
+
+    def read_to_dict(
+        self,
+        source: str,
+        columns: List[str] = None,
+        row_filter: str = None,
+        limit: int = -1,
+        sample: int = -1,
+        drop_duplicates: bool = False,
+    ) -> Dict[str, List]:
+        """Read data into a dict of named columns
+
+        Args:
+            source: A string specifying the data source (format differs by backend)
+            columns: List of column names to limit the reading to
+            row_filter: NOT IMPLEMENTED. Reserved keyword for filtering rows.
+            limit: Maximum number of rows to return (top-n)
+            sample: Size of a random sample to return
+            drop_duplicates: Whether to drop duplicate rows
+
+        Returns:
+            A dictionary with column names as key and a list with column values as values
+
+        The logic of the filtering arguments is as documented for
+        [`read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).
+        """
+        query = self._make_psql_query(source, columns, row_filter, limit, sample, drop_duplicates)
+
+        with self._connection.cursor() as cursor:
+            cursor.execute(query)
+            # Preallocate dataframe as list of lists
+            table = [[None] * cursor.rowcount for _ in range(cursor.pgresult.nfields)]
+            # Fetch the data
+            row_idx = 0
+            while row_idx < cursor.rowcount:
+                for row_as_tuples in cursor.fetchmany(size=self._batch_size):
+                    # if row_as_tuples is not None:
+                    for col_idx, cell in enumerate(row_as_tuples):
+                        table[col_idx][row_idx] = cell
+                    row_idx += 1
+
+        return {column.name: table[i] for i, column in enumerate(cursor.description)}
 
     def _make_psql_query(
         self,
@@ -73,6 +116,7 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         row_filter: str = None,
         limit: int = -1,
         sample: int = -1,
+        drop_duplicates: bool = False,
     ) -> psql.SQL:
         """Compose a full SQL query from the information given in the arguments.
 
@@ -90,6 +134,7 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
             sample = min(limit, sample)
             limit = -1
         table = psql.Identifier(source)
+        select = psql.SQL("SELECT DISTINCT") if drop_duplicates else psql.SQL("SELECT")
         columns_clause = self._make_columns_clause(columns)
         where_clause = self._make_where_clause(row_filter)
         limit_clause = self._make_limit_clause(limit)
@@ -98,7 +143,7 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
             [
                 x
                 for x in [
-                    psql.SQL("SELECT"),
+                    select,
                     columns_clause,
                     psql.SQL("FROM"),
                     table,
@@ -197,12 +242,11 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
                 "dataframe must either be a pandas DataFrame "
                 f"or a dict of lists but was {dataframe}"
             )
-        else:
-            table = psql.Identifier(target)
-            query = psql.SQL("DELETE FROM {table}").format(table=table)
-            with self._connection.cursor() as cursor:
-                cursor.execute(query)
-            self.write_append(target, dataframe)
+        table = psql.Identifier(target)
+        query = psql.SQL("DELETE FROM {table}").format(table=table)
+        with self._connection.cursor() as cursor:
+            cursor.execute(query)
+        self.write_append(target, dataframe)
 
     def write_append(self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List]]):
         """Write data in append-mode to a Postgres table
@@ -232,7 +276,7 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
             )
             with self._connection.cursor() as cursor:
                 # TODO: Work in batches here
-                cursor.executemany(query, zip(*[v for v in dataframe.values()]))
+                cursor.executemany(query, zip(*dataframe.values()))
         else:
             raise TypeError("dataframe must either be a pandas DataFrame or a dict of lists")
 
