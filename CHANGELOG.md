@@ -2,8 +2,10 @@
 
 ## Unreleased
 
+## 0.3.0 (2021-11-08)
 ### Added
 - Support for PostgreSQL
+- Less strict version pinning for dependencies
 
 ### Fixed
 - Package is installable without pyarrow now
