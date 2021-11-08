@@ -14,7 +14,7 @@
 
   <link rel="stylesheet" href="../../css/theme.css" />
   <link rel="stylesheet" href="../../css/theme_extra.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
   <link href="//use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet" />
   <link href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css" rel="stylesheet" />
   <link href="../../css/mkapi-common.css" rel="stylesheet" />
@@ -29,9 +29,8 @@
   
   <script src="../../js/jquery-2.1.1.min.js" defer></script>
   <script src="../../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
-  
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -45,7 +44,7 @@
         <a href="../.." class="icon icon-home"> dataframe-io</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -75,11 +74,15 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#dframeiofilterto_pyarrow_dnf">to_pyarrow_dnf</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#dframeiofilterto_psql">to_psql</a>
+    </li>
     </ul>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../dframeio.abstract/">dframeio.abstract</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../dframeio.parquet/">dframeio.parquet</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../dframeio.postgres/">dframeio.postgres</a>
                 </li>
     </ul>
                     </li>
@@ -109,11 +112,11 @@
     
       
         
-          <li>dframeio &raquo;</li>
+          <li>API documentation &raquo;</li>
         
       
         
-          <li>API documentation &raquo;</li>
+          <li>dframeio &raquo;</li>
         
       
     
@@ -127,6 +130,7 @@
   
   <hr/>
 </div>
+
           <div role="main">
             <div class="section">
               
@@ -169,8 +173,12 @@ Column names can but don't have to be quoted with SQL quotes (backticks). E.g.:<
 <span class="mkapi-item-type">(str)</span>
 <span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Parse a filter statement and return it in prefix notation.<a class="mkapi-src-link" href="../source/dframeio.filter/#dframeio.filter.to_prefix_notation" title="Source for dframeio.filter.to_prefix_notation">&lt;/&gt;</a></span></li>
 
+<li class="function"><code class="mkapi-item-name"><a href="#dframeio.filter.to_psql">to_psql</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">statement</code><code class="mkapi-object-parenthesis">)</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Convert a filter statement to Postgres SQL syntax<a class="mkapi-src-link" href="../source/dframeio.filter/#dframeio.filter.to_psql" title="Source for dframeio.filter.to_psql">&lt;/&gt;</a></span></li>
+
 <li class="function"><code class="mkapi-item-name"><a href="#dframeio.filter.to_pyarrow_dnf">to_pyarrow_dnf</a></code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">statement</code><code class="mkapi-object-parenthesis">)</code>
-<span class="mkapi-item-type">(list of list of (str, str, any))</span>
+<span class="mkapi-item-type">(Union(list of list of (str, str, any), list of (str, str, any), (str, str, any)))</span>
 <span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">Convert a filter statement to the disjunctive normal form understood by pyarrow<a class="mkapi-src-link" href="../source/dframeio.filter/#dframeio.filter.to_pyarrow_dnf" title="Source for dframeio.filter.to_pyarrow_dnf">&lt;/&gt;</a></span></li>
 
 
@@ -261,7 +269,7 @@ More information about the format and its limitations can be found in the
     </div>
   <div class="mkapi-section returns">
       <div class="mkapi-section-name returns">
-          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(list of list of (str, str, any))</span>
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(Union(list of list of (str, str, any), list of (str, str, any), (str, str, any)))</span>
         </div>
       <div class="mkapi-section-body returns"><p>The filter statement converted to a list of lists of tuples.</p></div>
     </div>
@@ -289,6 +297,68 @@ More information about the format and its limitations can be found in the
 </code></pre>
 <pre><code class="language-python">&gt;&gt;&gt; to_pyarrow_dnf(&quot;a &gt; 1 and b &lt;= 3 or c = 'abc'&quot;)
 [[('a', '&gt;', 1), ('b', '&lt;=', 3)], [('c', '=', 'abc')]]
+</code></pre></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mkapi-node" id="dframeio.filter.to_psql">
+<div class='mkapi-object-container'>
+  <div class="mkapi-object function code top">
+    <div class="mkapi-object-kind function top">function</div>
+    <h2 id="dframeiofilterto_psql" class="mkapi-object-body function top"><code class="mkapi-object-prefix">dframeio.filter.</code><code class="mkapi-object-name">to_psql</code><code class="mkapi-object-parenthesis">(</code><code class="mkapi-object-signature">statement</code><code class="mkapi-object-parenthesis">)</code></h2>
+  </div>
+  <div class="mkapi-src-link">
+    <a class="mkapi-src-link" href="../source/dframeio.filter/#dframeio.filter.to_psql" title="Source for dframeio.filter.to_psql">&lt;/&gt;</a>
+  </div>
+</div>
+<div class="mkapi-docstring">
+<div class="mkapi-section">
+      <div class="mkapi-section-body"><p>Convert a filter statement to Postgres SQL syntax</p></div>
+    </div>
+  <div class="mkapi-section parameters">
+      <div class="mkapi-section-name parameters">
+          <span class="mkapi-section-name-body parameters">Parameters</span> 
+        </div>
+      <div class="mkapi-section-body parameters"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">statement</code>
+<span class="mkapi-item-type">(str)</span>
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">A filter predicate as string</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section returns">
+      <div class="mkapi-section-name returns">
+          <span class="mkapi-section-name-body returns">Returns</span> <span class="mkapi-item-type">(str)</span>
+        </div>
+      <div class="mkapi-section-body returns"><p>The filter statement converted to psql.</p></div>
+    </div>
+  <div class="mkapi-section raises">
+      <div class="mkapi-section-name raises">
+          <span class="mkapi-section-name-body raises">Raises</span> 
+        </div>
+      <div class="mkapi-section-body raises"><ul class="mkapi-items">
+<li><code class="mkapi-item-name">ValueError</code>
+
+<span class="mkapi-item-dash">&mdash;</span> <span class="mkapi-item-description">If the statement cannot be parsed</span></li>
+
+
+</ul></div>
+    </div>
+  <div class="mkapi-section examples">
+      <div class="mkapi-section-name examples">
+          <span class="mkapi-section-name-body examples">Examples</span> 
+        </div>
+      <div class="mkapi-section-body examples"><pre><code class="language-python">&gt;&gt;&gt; to_psql(&quot;a.column != 0&quot;)
+'&quot;a.column&quot; &lt;&gt; 0'
+</code></pre>
+<pre><code class="language-python">&gt;&gt;&gt; to_psql(&quot;a &gt; 1 and b &lt;= 3&quot;)
+'&quot;a&quot; &gt; 1 AND &quot;b&quot; &lt;= 3'
+</code></pre>
+<pre><code class="language-python">&gt;&gt;&gt; to_psql(&quot;a &gt; 1 and b &lt;= 3 or c = 'abc'&quot;)
+'&quot;a&quot; &gt; 1 AND &quot;b&quot; &lt;= 3 OR &quot;c&quot; = \'abc\''
 </code></pre></div>
     </div>
   </div>
@@ -327,17 +397,18 @@ More information about the format and its limitations can be found in the
   </div>
 
   <div class="rst-versions" role="note" aria-label="versions">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      
-      
-        <span><a href="../dframeio/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      
-      
-        <span style="margin-left: 15px"><a href="../dframeio.abstract/" style="color: #fcfcfc">Next &raquo;</a></span>
-      
-    </span>
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../dframeio/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../dframeio.abstract/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
 </div>
     <script>var base_url = '../..';</script>
+    <script src="../../js/theme_extra.js" defer></script>
     <script src="../../js/theme.js" defer></script>
       <script src="../../js/mkapi.js" defer></script>
       <script src="../../search/main.js" defer></script>

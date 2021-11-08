@@ -14,7 +14,7 @@
 
   <link rel="stylesheet" href="../css/theme.css" />
   <link rel="stylesheet" href="../css/theme_extra.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
   <link href="//use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet" />
   <link href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css" rel="stylesheet" />
   <link href="../css/mkapi-common.css" rel="stylesheet" />
@@ -29,9 +29,8 @@
   
   <script src="../js/jquery-2.1.1.min.js" defer></script>
   <script src="../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
-  
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -45,7 +44,7 @@
         <a href=".." class="icon icon-home"> dataframe-io</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -74,6 +73,8 @@
                 <li class="toctree-l2"><a class="reference internal" href="../api/dframeio.abstract/">dframeio.abstract</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api/dframeio.parquet/">dframeio.parquet</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../api/dframeio.postgres/">dframeio.postgres</a>
                 </li>
     </ul>
                     </li>
@@ -135,6 +136,7 @@
   
   <hr/>
 </div>
+
           <div role="main">
             <div class="section">
               
@@ -214,19 +216,20 @@ articles, and such.</p>
 <li>If the pull request adds functionality, the docs should be updated. Put
    your new functionality into a function with a docstring, and add the
    feature to the list in README.md.</li>
-<li>The pull request should work for CPython 3.7, 3.8 and 3.9. Check
-   https://github.com/chr1st1ank/dframeio/actions
-   and make sure that the tests pass for all supported Python versions.</li>
+<li>The pull request should work for CPython 3.7, 3.8, 3.9 and 3.10.
+   Make sure that the tests pass for all supported Python versions.</li>
 </ol>
 <h2 id="deploying">Deploying<a class="headerlink" href="#deploying" title="Permanent link">&para;</a></h2>
 <p>A reminder for the maintainers on how to deploy.</p>
-<p>On branch "main":
-- Adjust CHANGELOG.md as described on https://keepachangelog.com
-- Adjust the version number in dframeio/<strong>init</strong>.py
-- Then run <code>poetry version [major | minor | patch]</code>
-- Commit and push the changes
-- Create a github release and watch the <a href="https://github.com/chr1st1ank/dataframe-io/actions/workflows/release.yml">release workflow</a>
-  publishing the documentation and the PyPI package.</p>
+<p>On branch "main":</p>
+<ul>
+<li>Adjust CHANGELOG.md as described on <a href="https://keepachangelog.com/..">https://keepachangelog.com</a>.</li>
+<li>Adjust the version number in dframeio/<strong>init</strong>.py.</li>
+<li>Then run <code>poetry version [major | minor | patch]</code>.</li>
+<li>Commit and push the changes.</li>
+<li>Create a github release and watch the <a href="https://github.com/chr1st1ank/dataframe-io/actions/workflows/release.yml">release workflow</a>
+  publishing the documentation and the PyPI package.</li>
+</ul>
 <!-- END INCLUDE -->
               
             </div>
@@ -236,7 +239,7 @@ articles, and such.</p>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="../api/dframeio.parquet/" class="btn btn-neutral" title="dframeio.parquet"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../api/dframeio.postgres/" class="btn btn-neutral" title="dframeio.postgres"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -259,15 +262,16 @@ articles, and such.</p>
   </div>
 
   <div class="rst-versions" role="note" aria-label="versions">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      
-      
-        <span><a href="../api/dframeio.parquet/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      
-      
-    </span>
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../api/dframeio.postgres/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
 </div>
     <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
     <script src="../js/theme.js" defer></script>
       <script src="../js/mkapi.js" defer></script>
       <script src="../search/main.js" defer></script>

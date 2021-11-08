@@ -14,7 +14,7 @@
 
   <link rel="stylesheet" href="css/theme.css" />
   <link rel="stylesheet" href="css/theme_extra.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
   <link href="//use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet" />
   <link href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css" rel="stylesheet" />
   <link href="css/mkapi-common.css" rel="stylesheet" />
@@ -29,9 +29,8 @@
   
   <script src="js/jquery-2.1.1.min.js" defer></script>
   <script src="js/modernizr-2.8.3.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
-  
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -45,7 +44,7 @@
         <a href="." class="icon icon-home"> dataframe-io</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -55,6 +54,8 @@
                     <li class="toctree-l1 current"><a class="reference internal current" href=".">Home</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#features">Features</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
     </li>
     </ul>
                     </li>
@@ -78,6 +79,8 @@
                 <li class="toctree-l2"><a class="reference internal" href="api/dframeio.abstract/">dframeio.abstract</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="api/dframeio.parquet/">dframeio.parquet</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="api/dframeio.postgres/">dframeio.postgres</a>
                 </li>
     </ul>
                     </li>
@@ -117,6 +120,7 @@
   
   <hr/>
 </div>
+
           <div role="main">
             <div class="section">
               
@@ -124,17 +128,94 @@
 <h1 id="dataframe-io">dataframe-io<a class="headerlink" href="#dataframe-io" title="Permanent link">&para;</a></h1>
 <p><a href="https://pypi.python.org/pypi/dframeio"><img src="https://img.shields.io/pypi/v/dframeio.svg" alt="Release Status"></a>
 <a href="https://github.com/chr1st1ank/dataframe-io/actions"><img src="https://github.com/chr1st1ank/dataframe-io/actions/workflows/test.yml/badge.svg?branch=main" alt="CI Status"></a>
-<a href="https://codecov.io/gh/chr1st1ank/dataframe-io"><img alt="codecov" src="https://codecov.io/gh/chr1st1ank/dataframe-io/branch/master/graph/badge.svg?token=4oBkRHXbfa" /></a></p>
-<p>Read and write dataframes anywhere</p>
+<a href="https://codecov.io/gh/chr1st1ank/dataframe-io"><img alt="codecov" src="https://codecov.io/gh/chr1st1ank/dataframe-io/branch/main/graph/badge.svg?token=4oBkRHXbfa" /></a></p>
+<p>Read and write dataframes from and to any storage.</p>
 <ul>
 <li>Documentation: <a href="https://chr1st1ank.github.io/dataframe-io/">https://chr1st1ank.github.io/dataframe-io/</a></li>
 <li>License: Apache-2.0</li>
 <li>Status: Initial development</li>
 </ul>
 <h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
+<p>Dataframes types supported:</p>
 <ul>
-<li>TODO</li>
+<li>pandas DataFrame</li>
+<li>Python dictionary</li>
 </ul>
+<p>Supported storage backends:</p>
+<ul>
+<li>Parquet files</li>
+<li>PostgreSQL database</li>
+</ul>
+<p>More backends will come. Open an <a href="https://github.com/chr1st1ank/dataframe-io/issues">issue</a>
+if you are interested in a particular backend.</p>
+<p>Implementation status for reading data:</p>
+<table>
+<thead>
+<tr>
+<th>Storage</th>
+<th align="center">Select columns</th>
+<th align="center">Filter rows</th>
+<th align="center">Max rows</th>
+<th align="center">Sampling</th>
+<th align="center">Drop duplicates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Parquet files</td>
+<td align="center">✔️</td>
+<td align="center">✔️</td>
+<td align="center">✔️</td>
+<td align="center">✔️</td>
+<td align="center">✔ ¹</td>
+</tr>
+<tr>
+<td>PostgreSQL</td>
+<td align="center">✔️</td>
+<td align="center">✔️</td>
+<td align="center">✔️</td>
+<td align="center">✔️</td>
+<td align="center">✔️</td>
+</tr>
+</tbody>
+</table>
+<p>¹ only for pandas DataFrames</p>
+<p>Implementation status for writing data:</p>
+<table>
+<thead>
+<tr>
+<th>Storage</th>
+<th align="center">write append</th>
+<th align="center">write replace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Parquet files</td>
+<td align="center">✔️</td>
+<td align="center">✔️</td>
+</tr>
+<tr>
+<td>PostgreSQL</td>
+<td align="center">✔️</td>
+<td align="center">✔️</td>
+</tr>
+</tbody>
+</table>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<pre><code>pip install dframeio
+
+# Including pyarrow to read/write parquet files:
+pip install dframeio[parquet]
+
+# Including PostgreSQL support:
+pip install dframeio[postgres]
+</code></pre>
+<p>Show installed backends:</p>
+<pre><code>&gt;&gt;&gt; import dframeio
+&gt;&gt;&gt; dframeio.backends
+[&lt;class 'dframeio.parquet.ParquetBackend'&gt;]
+</code></pre>
 <!-- END INCLUDE -->
               
             </div>
@@ -167,15 +248,16 @@
   </div>
 
   <div class="rst-versions" role="note" aria-label="versions">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      
-      
-      
-        <span style="margin-left: 15px"><a href="installation/" style="color: #fcfcfc">Next &raquo;</a></span>
-      
-    </span>
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+      <span><a href="installation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
 </div>
     <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
     <script src="js/theme.js" defer></script>
       <script src="js/mkapi.js" defer></script>
       <script src="search/main.js" defer></script>
@@ -189,6 +271,6 @@
 </html>
 
 <!--
-MkDocs version : 1.1.2
-Build Date UTC : 2021-06-19 12:35:02.948470+00:00
+MkDocs version : 1.2.3
+Build Date UTC : 2021-11-08 00:17:33.762002+00:00
 -->

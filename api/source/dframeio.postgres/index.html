@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../../img/favicon.ico">
+  <title>dframeio.postgres - dataframe-io</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../../css/theme.css" />
+  <link rel="stylesheet" href="../../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  <link href="//use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet" />
+  <link href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css" rel="stylesheet" />
+  <link href="../../../css/mkapi-common.css" rel="stylesheet" />
+  <link href="../../../css/mkapi-readthedocs.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "dframeio.postgres";
+    var mkdocs_page_input_path = "api/source/dframeio.postgres.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../../.." class="icon icon-home"> dataframe-io</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../installation/">Installation</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../usage/">Usage</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">API documentation</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="#">dframeio</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../dframeio/">dframeio</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../dframeio.filter/">dframeio.filter</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../dframeio.abstract/">dframeio.abstract</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../dframeio.parquet/">dframeio.parquet</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../dframeio.postgres/">dframeio.postgres</a>
+                </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../../contributing/">Contributing</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../..">dataframe-io</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>dframeio.postgres</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/chr1st1ank/dframeio/edit/master/docs/api/source/dframeio.postgres.md"> Edit on dframeio</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <div class="mkapi-node">
+<h1 id="" class="mkapi-object mkapi-object-code plain">
+<span class="mkapi-object-kind mkapi-object-kind-code">SOURCE CODE</span>
+<span class="mkapi-object-prefix">dframeio.</span><span class="mkapi-object-name">postgres</span>
+<span id="dframeio.postgres"></span><a class="mkapi-docs-link" href="../../dframeio.postgres">DOCS</a>
+</h1>
+
+<div class="mkapi-code">
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Access PostgreSQL databases using psycopg3.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">psycopg</span>
+<span class="kn">import</span> <span class="nn">psycopg.sql</span> <span class="k">as</span> <span class="nn">psql</span>
+
+<span class="kn">from</span> <span class="nn">.abstract</span> <span class="kn">import</span> <span class="n">AbstractDataFrameReader</span><span class="p">,</span> <span class="n">AbstractDataFrameWriter</span>
+<span class="kn">from</span> <span class="nn">.filter</span> <span class="kn">import</span> <span class="n">to_psql</span>
+
+
+<span class="k">class</span> <span class="nc">PostgresBackend</span><span class="p">(</span><span class="n">AbstractDataFrameReader</span><span class="p">,</span> <span class="n">AbstractDataFrameWriter</span><span class="p">):</span><span id="dframeio.postgres.PostgresBackend"></span><a class="mkapi-docs-link" title="dframeio.postgres.PostgresBackend" href="../../dframeio.postgres/#dframeio.postgres.PostgresBackend">DOCS</a>
+    <span class="sd">&quot;&quot;&quot;Backend to read and write PostgreSQL tables</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        conninfo: Connection string in libq format. See the [PostgreSQL docs][1]</span>
+<span class="sd">            for details.</span>
+<span class="sd">        connection_factory: Alternative way of connecting is to provide a function returning</span>
+<span class="sd">            an already established connection.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">         ValueError: If any of the input arguments are outside of the documented</span>
+<span class="sd">            value ranges or if conflicting arguments are given.</span>
+<span class="sd">         TypeError: If any of the input arguments has a diffent type as documented</span>
+
+<span class="sd">    [1]: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_connection</span><span class="p">:</span> <span class="n">psycopg</span><span class="o">.</span><span class="n">Connection</span>
+    <span class="n">_batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conninfo</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">autocommit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span> <span class="o">=</span> <span class="n">psycopg</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">conninfo</span><span class="o">=</span><span class="n">conninfo</span><span class="p">,</span> <span class="n">autocommit</span><span class="o">=</span><span class="n">autocommit</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">read_to_pandas</span><span class="p">(</span><span id="dframeio.postgres.PostgresBackend.read_to_pandas"></span><a class="mkapi-docs-link" title="dframeio.postgres.PostgresBackend.read_to_pandas" href="../../dframeio.postgres/#dframeio.postgres.PostgresBackend.read_to_pandas">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">row_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">sample</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">drop_duplicates</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read a postgres table into a pandas DataFrame</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            source: The table name (may include a database name)</span>
+<span class="sd">            columns: List of column names to limit the reading to</span>
+<span class="sd">            row_filter: Filter expression for selecting rows</span>
+<span class="sd">            limit: Maximum number of rows to return (limit to first n rows)</span>
+<span class="sd">            sample: Size of a random sample to return</span>
+<span class="sd">            drop_duplicates: Whether to drop duplicate rows from the final selection</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A pandas DataFrame with the requested data.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If path specified with `source` is outside of the base path</span>
+
+<span class="sd">        The logic of the filtering arguments is as documented for</span>
+<span class="sd">        [`read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_psql_query</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">row_filter</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">drop_duplicates</span><span class="p">)</span>
+
+        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">drop_duplicates</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">dataframe</span>
+
+    <span class="k">def</span> <span class="nf">read_to_dict</span><span class="p">(</span><span id="dframeio.postgres.PostgresBackend.read_to_dict"></span><a class="mkapi-docs-link" title="dframeio.postgres.PostgresBackend.read_to_dict" href="../../dframeio.postgres/#dframeio.postgres.PostgresBackend.read_to_dict">DOCS</a>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">row_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">sample</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">drop_duplicates</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Read data into a dict of named columns</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            source: A string specifying the data source (format differs by backend)</span>
+<span class="sd">            columns: List of column names to limit the reading to</span>
+<span class="sd">            row_filter: NOT IMPLEMENTED. Reserved keyword for filtering rows.</span>
+<span class="sd">            limit: Maximum number of rows to return (top-n)</span>
+<span class="sd">            sample: Size of a random sample to return</span>
+<span class="sd">            drop_duplicates: Whether to drop duplicate rows</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary with column names as key and a list with column values as values</span>
+
+<span class="sd">        The logic of the filtering arguments is as documented for</span>
+<span class="sd">        [`read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_psql_query</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">row_filter</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">drop_duplicates</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="c1"># Preallocate dataframe as list of lists</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="p">[[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">cursor</span><span class="o">.</span><span class="n">rowcount</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cursor</span><span class="o">.</span><span class="n">pgresult</span><span class="o">.</span><span class="n">nfields</span><span class="p">)]</span>
+            <span class="c1"># Fetch the data</span>
+            <span class="n">row_idx</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="n">row_idx</span> <span class="o">&lt;</span> <span class="n">cursor</span><span class="o">.</span><span class="n">rowcount</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">row_as_tuples</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchmany</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span><span class="p">):</span>
+                    <span class="c1"># if row_as_tuples is not None:</span>
+                    <span class="k">for</span> <span class="n">col_idx</span><span class="p">,</span> <span class="n">cell</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">row_as_tuples</span><span class="p">):</span>
+                        <span class="n">table</span><span class="p">[</span><span class="n">col_idx</span><span class="p">][</span><span class="n">row_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span>
+                    <span class="n">row_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="n">column</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">table</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cursor</span><span class="o">.</span><span class="n">description</span><span class="p">)}</span>
+
+    <span class="k">def</span> <span class="nf">_make_psql_query</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">row_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">sample</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">drop_duplicates</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Compose a full SQL query from the information given in the arguments.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            source: The table name (may include a database name)</span>
+<span class="sd">            columns: List of column names to limit the reading to</span>
+<span class="sd">            row_filter: Filter expression for selecting rows</span>
+<span class="sd">            limit: Maximum number of rows to return (limit to first n rows)</span>
+<span class="sd">            sample: Size of a random sample to return</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Prepared query for psycopg</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">limit</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">sample</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="n">sample</span><span class="p">)</span>
+            <span class="n">limit</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">psql</span><span class="o">.</span><span class="n">Identifier</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="n">select</span> <span class="o">=</span> <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">(</span><span class="s2">&quot;SELECT DISTINCT&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">drop_duplicates</span> <span class="k">else</span> <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">(</span><span class="s2">&quot;SELECT&quot;</span><span class="p">)</span>
+        <span class="n">columns_clause</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_columns_clause</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+        <span class="n">where_clause</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_where_clause</span><span class="p">(</span><span class="n">row_filter</span><span class="p">)</span>
+        <span class="n">limit_clause</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_limit_clause</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+        <span class="n">sample_clause</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_sample_clause</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">x</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span>
+                    <span class="n">select</span><span class="p">,</span>
+                    <span class="n">columns_clause</span><span class="p">,</span>
+                    <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">(</span><span class="s2">&quot;FROM&quot;</span><span class="p">),</span>
+                    <span class="n">table</span><span class="p">,</span>
+                    <span class="n">where_clause</span><span class="p">,</span>
+                    <span class="n">sample_clause</span><span class="p">,</span>
+                    <span class="n">limit_clause</span><span class="p">,</span>
+                <span class="p">]</span>
+                <span class="k">if</span> <span class="n">x</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">query</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_make_where_clause</span><span class="p">(</span><span class="n">row_filter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a psql WHERE clause from dframeio&#39;s standard SQL syntax&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">row_filter</span><span class="p">:</span>
+            <span class="n">psql_filter</span> <span class="o">=</span> <span class="n">to_psql</span><span class="p">(</span><span class="n">row_filter</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; WHERE </span><span class="si">{</span><span class="n">psql_filter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_make_columns_clause</span><span class="p">(</span><span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create the list of columns for a select statement in psql syntax&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;columns&#39; must be a list of column names. Got &#39;</span><span class="si">{</span><span class="n">columns</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">psql</span><span class="o">.</span><span class="n">Identifier</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">])</span> <span class="k">if</span> <span class="n">columns</span> <span class="k">else</span> <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_make_sample_clause</span><span class="p">(</span><span class="n">sample</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">psql</span><span class="o">.</span><span class="n">Composed</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a sample clause in psql syntax if limit != -1, otherwise return empty clause&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">sample</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;limit&#39; must be a positive integer. Got </span><span class="si">{</span><span class="n">sample</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">(</span><span class="s2">&quot; ORDER BY RANDOM() LIMIT </span><span class="si">{sample}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sample</span><span class="o">=</span><span class="n">sample</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">psql</span><span class="o">.</span><span class="n">Composed</span><span class="p">([])</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_make_limit_clause</span><span class="p">(</span><span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">psql</span><span class="o">.</span><span class="n">Composed</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create a limit clause in psql syntax if limit != -1, otherwise return empty clause&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">limit</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;limit&#39; must be a positive integer. Got </span><span class="si">{</span><span class="n">limit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">(</span><span class="s2">&quot; LIMIT </span><span class="si">{limit}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">psql</span><span class="o">.</span><span class="n">Composed</span><span class="p">([])</span>
+
+    <span class="k">def</span> <span class="nf">write_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]]):</span><span id="dframeio.postgres.PostgresBackend.write_replace"></span><a class="mkapi-docs-link" title="dframeio.postgres.PostgresBackend.write_replace" href="../../dframeio.postgres/#dframeio.postgres.PostgresBackend.write_replace">DOCS</a>
+        <span class="sd">&quot;&quot;&quot;Write data to a Postgres table after deleting all the existing content</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            target: The database table to write to.</span>
+<span class="sd">            dataframe: The data to write as pandas.DataFrame or as a Python dictionary</span>
+<span class="sd">                in the format `column_name: [column_data]`</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: When the dataframe is neither a pandas.DataFrame nor a dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;dataframe must either be a pandas DataFrame &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;or a dict of lists but was </span><span class="si">{</span><span class="n">dataframe</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">psql</span><span class="o">.</span><span class="n">Identifier</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">(</span><span class="s2">&quot;DELETE FROM </span><span class="si">{table}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_append</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">write_append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]]):</span><span id="dframeio.postgres.PostgresBackend.write_append"></span><a class="mkapi-docs-link" title="dframeio.postgres.PostgresBackend.write_append" href="../../dframeio.postgres/#dframeio.postgres.PostgresBackend.write_append">DOCS</a>
+        <span class="sd">&quot;&quot;&quot;Write data in append-mode to a Postgres table</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            target: The database table to write to.</span>
+<span class="sd">            dataframe: The data to write as pandas.DataFrame or as a Python dictionary</span>
+<span class="sd">                in the format `column_name: [column_data]`</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: When the dataframe is neither a pandas.DataFrame nor a dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">psql</span><span class="o">.</span><span class="n">Identifier</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">psql</span><span class="o">.</span><span class="n">Identifier</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">columns</span><span class="p">])</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">])</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">(</span><span class="s2">&quot;INSERT INTO </span><span class="si">{table}</span><span class="s2">(</span><span class="si">{columns}</span><span class="s2">) VALUES (&quot;</span> <span class="o">+</span> <span class="n">values</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values</span>
+            <span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">notnull</span><span class="p">())</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">psql</span><span class="o">.</span><span class="n">Identifier</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="p">])</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">])</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">psql</span><span class="o">.</span><span class="n">SQL</span><span class="p">(</span><span class="s2">&quot;INSERT INTO </span><span class="si">{table}</span><span class="s2">(</span><span class="si">{columns}</span><span class="s2">) VALUES (&quot;</span> <span class="o">+</span> <span class="n">values</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values</span>
+            <span class="p">)</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">dataframe</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;dataframe must either be a pandas DataFrame or a dict of lists&quot;</span><span class="p">)</span>
+</code></pre></div>
+</div>
+</div>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '../../..';</script>
+    <script src="../../../js/theme_extra.js" defer></script>
+    <script src="../../../js/theme.js" defer></script>
+      <script src="../../../js/mkapi.js" defer></script>
+      <script src="../../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

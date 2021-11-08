@@ -14,7 +14,7 @@
 
   <link rel="stylesheet" href="../css/theme.css" />
   <link rel="stylesheet" href="../css/theme_extra.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
   <link href="//use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet" />
   <link href="//use.fontawesome.com/releases/v5.8.1/css/v4-shims.css" rel="stylesheet" />
   <link href="../css/mkapi-common.css" rel="stylesheet" />
@@ -29,9 +29,8 @@
   
   <script src="../js/jquery-2.1.1.min.js" defer></script>
   <script src="../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
-  
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -45,7 +44,7 @@
         <a href=".." class="icon icon-home"> dataframe-io</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -74,6 +73,8 @@
                 <li class="toctree-l2"><a class="reference internal" href="../api/dframeio.abstract/">dframeio.abstract</a>
                 </li>
                 <li class="toctree-l2"><a class="reference internal" href="../api/dframeio.parquet/">dframeio.parquet</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../api/dframeio.postgres/">dframeio.postgres</a>
                 </li>
     </ul>
                     </li>
@@ -113,15 +114,29 @@
   
   <hr/>
 </div>
+
           <div role="main">
             <div class="section">
               
                 <!-- BEGIN INCLUDE ../CHANGELOG.md   -->
 <h1 id="history">History<a class="headerlink" href="#history" title="Permanent link">&para;</a></h1>
+<h2 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h2 id="030-2021-11-08">0.3.0 (2021-11-08)<a class="headerlink" href="#030-2021-11-08" title="Permanent link">&para;</a></h2>
+<h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Support for PostgreSQL</li>
+<li>Less strict version pinning for dependencies</li>
+</ul>
+<h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Package is installable without pyarrow now</li>
+</ul>
 <h2 id="020-2021-06-19">0.2.0 (2021-06-19)<a class="headerlink" href="#020-2021-06-19" title="Permanent link">&para;</a></h2>
-<p>Added:
-- Parquet file reading and writing with all features
-- drameio.filter module for row filters in SQL syntax</p>
+<h3 id="added_1">Added<a class="headerlink" href="#added_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Parquet file reading and writing with all features</li>
+<li>drameio.filter module for row filters in SQL syntax</li>
+</ul>
 <h2 id="011-2021-06-04">0.1.1 (2021-06-04)<a class="headerlink" href="#011-2021-06-04" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Working draft of parquet file reading and writing</li>
@@ -155,13 +170,14 @@
   </div>
 
   <div class="rst-versions" role="note" aria-label="versions">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      
-      
-      
-    </span>
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
 </div>
     <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
     <script src="../js/theme.js" defer></script>
       <script src="../js/mkapi.js" defer></script>
       <script src="../search/main.js" defer></script>
