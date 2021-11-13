@@ -109,7 +109,7 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
                         table[col_idx][row_idx] = cell
                     row_idx += 1
 
-        return {column.name: table[i] for i, column in enumerate(cursor.description)}
+            return {column.name: table[i] for i, column in enumerate(cursor.description)}
 
     def _make_psql_query(
         self,
