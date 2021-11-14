@@ -5,7 +5,7 @@ from typing import Dict, List, Union
 try:
     import pandas as pd
 except ImportError:
-    pd = None
+    pd = None  # type: ignore
 
 
 class AbstractDataFrameReader:
