@@ -2,10 +2,7 @@
 from abc import abstractmethod
 from typing import Dict, List, Union
 
-try:
-    import pandas as pd
-except ImportError:
-    pd = None  # type: ignore
+import pandas as pd
 
 
 class AbstractDataFrameReader:
