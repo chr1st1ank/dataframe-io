@@ -42,7 +42,8 @@ test = [
     "flake8",
     "flake8-docstrings",
     "pytest-cov",
-    "yamllint"
+    "yamllint",
+    "mypy"
 ]
 
 dev = ["tox", "pre-commit", "virtualenv", "pip", "twine", "toml"]
@@ -80,6 +81,7 @@ pylint-junit = "*"
 #Jinja2 = "^3.0.1"  # This is only for pyparsing[diagrams]
 pydot = "^1.4.2"
 psycopg = "^3.0.1"
+mypy = "^0.910"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

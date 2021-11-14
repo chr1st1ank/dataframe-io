@@ -14,7 +14,7 @@ def method_names(cls: typing.Type) -> typing.List[str]:
 
 
 @pytest.mark.parametrize("function", method_names(abstract.AbstractDataFrameReader))
-@pytest.mark.parametrize("backend", dframeio.backends)
+@pytest.mark.parametrize("backend", dframeio.read_backends)
 def test_abstract_reader__methods_implemented(backend: typing.Type, function: str):
     """Checks if all functions of AbstractDataFrameReader are implemented"""
     method = getattr(backend, function)
@@ -24,7 +24,7 @@ def test_abstract_reader__methods_implemented(backend: typing.Type, function: st
 
 
 @pytest.mark.parametrize("function", method_names(abstract.AbstractDataFrameReader))
-@pytest.mark.parametrize("backend", dframeio.backends)
+@pytest.mark.parametrize("backend", dframeio.read_backends)
 def test_abstract_reader_method_signatures(backend: typing.Type, function: str):
     """Checks function signatures of all AbstractDataFrameReader implementations
 
@@ -33,5 +33,29 @@ def test_abstract_reader_method_signatures(backend: typing.Type, function: str):
     type hints.
     """
     abstract_signature = inspect.getfullargspec(getattr(abstract.AbstractDataFrameReader, function))
+    concrete_signature = inspect.getfullargspec(getattr(backend, function))
+    assert concrete_signature == abstract_signature
+
+
+@pytest.mark.parametrize("function", method_names(abstract.AbstractDataFrameWriter))
+@pytest.mark.parametrize("backend", dframeio.write_backends)
+def test_abstract_writer__methods_implemented(backend: typing.Type, function: str):
+    """Checks if all functions of AbstractDataFrameWriter are implemented"""
+    method = getattr(backend, function)
+    assert not hasattr(
+        method, "__isabstractmethod__"
+    ), f"{function}() not implemented for {backend}"
+
+
+@pytest.mark.parametrize("function", method_names(abstract.AbstractDataFrameWriter))
+@pytest.mark.parametrize("backend", dframeio.write_backends)
+def test_abstract_writer_method_signatures(backend: typing.Type, function: str):
+    """Checks function signatures of all AbstractDataFrameWriter implementations
+
+    This checks if the signature of all implemented methods are the same as in the
+    base class. Arguments have to be the same, including names, default values and
+    type hints.
+    """
+    abstract_signature = inspect.getfullargspec(getattr(abstract.AbstractDataFrameWriter, function))
     concrete_signature = inspect.getfullargspec(getattr(backend, function))
     assert concrete_signature == abstract_signature

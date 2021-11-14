@@ -5,11 +5,11 @@ import random
 import re
 import shutil
 from pathlib import Path
-from typing import Dict, Iterable, List, Union
+from typing import Any, Dict, Iterable, List, Union
 
 import pandas as pd
-import pyarrow as pa
-import pyarrow.parquet as pq
+import pyarrow as pa  # type: ignore  # Type hints are missing in pyarrow
+import pyarrow.parquet as pq  # type: ignore  # Type hints are missing in pyarrow
 
 import dframeio.filter
 
@@ -252,7 +252,7 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
                 )
 
     @staticmethod
-    def _remove_matching_keys(d: collections.abc.Mapping, regex: str):
+    def _remove_matching_keys(d: Dict[str, Any], regex: str):
         """Remove all keys matching regex from the dictionary d"""
         compiled_regex = re.compile(regex)
         keys_to_delete = [k for k in d.keys() if compiled_regex.match(k)]
@@ -333,7 +333,7 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         """
         kwargs = dict(columns=columns, use_threads=True, use_pandas_metadata=use_pandas_metadata)
         if row_filter:
-            kwargs["filters"] = dframeio.filter.to_pyarrow_dnf(row_filter)
+            kwargs["filters"] = dframeio.filter.to_pyarrow_dnf(row_filter)  # type: ignore
         df = pq.read_table(str(full_path), **kwargs)
         if limit >= 0:
             df = df.slice(0, min(df.num_rows, limit))
