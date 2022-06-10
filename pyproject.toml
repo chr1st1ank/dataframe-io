@@ -1,7 +1,7 @@
 [tool]
 [tool.poetry]
 name = "dframeio"
-version = "0.2.0"
+version = "0.3.0"
 homepage = "https://github.com/chr1st1ank/dataframe-io"
 description = "Read and write dataframes anywhere."
 authors = ["Christian Krudewig <chr1st1ank@krudewig-online.de>"]
@@ -27,9 +27,9 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.7.1,<4.0"
 pandas = ">=1.0.0,<2.0"
-pyarrow = { version = "^4.0.0", optional = true }
-psycopg = { version = "^3.0.1", optional = true }
-lark-parser = "^0.11.3"
+pyarrow = { version = ">=4.0,<7.0", optional = true }
+psycopg = { version = "~3", optional = true }
+lark-parser = "^0.12.0"
 
 [tool.poetry.extras]
 pyarrow = ["pyarrow"]   # For backward compatibility
@@ -43,7 +43,8 @@ test = [
     "flake8",
     "flake8-docstrings",
     "pytest-cov",
-    "yamllint"
+    "yamllint",
+    "mypy"
 ]
 
 dev = ["tox", "pre-commit", "virtualenv", "pip", "twine", "toml"]
@@ -66,7 +67,7 @@ mkdocs-include-markdown-plugin = { version = "*" }
 mkapi = { version = "*" }
 pip = { version = "^20.3.1" }
 pre-commit = { version = "^2.12.0" }
-pyarrow = "^4.0.0"
+pyarrow = "^6.0.0"
 pytest = "^6.2.4"
 pytest-cov = { version = "*" }
 toml = { version = "*" }
@@ -81,6 +82,7 @@ pylint-junit = "*"
 #Jinja2 = "^3.0.1"  # This is only for pyparsing[diagrams]
 pydot = "^1.4.2"
 psycopg = "^3.0.1"
+mypy = "^0.910"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

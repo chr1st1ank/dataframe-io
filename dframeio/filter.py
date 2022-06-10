@@ -205,7 +205,7 @@ class _PyarrowDNFTransformer(lark.Transformer):
 
     @dataclass
     class Condition:
-        key: str
+        key: Any
         operator: str
         value: Union[str, int, float]
 

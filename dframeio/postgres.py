@@ -30,7 +30,7 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
     _connection: psycopg.Connection
     _batch_size: int = 1000
 
-    def __init__(self, conninfo: str = None, *, autocommit=True):
+    def __init__(self, conninfo: str, *, autocommit=True):
         super().__init__()
         self._connection = psycopg.connect(conninfo=conninfo, autocommit=autocommit)
 
@@ -91,6 +91,11 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         Returns:
             A dictionary with column names as key and a list with column values as values
 
+        Raises:
+            EOFError: If PostgreSQL does not return a valid result of the query. Note that
+                this doesn't apply for an empty result set. In this case the values in the
+                dictionary returned are simply empty lists.
+
         The logic of the filtering arguments is as documented for
         [`read_to_pandas()`](dframeio.abstract.AbstractDataFrameReader.read_to_pandas).
         """
@@ -98,6 +103,8 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
 
         with self._connection.cursor() as cursor:
             cursor.execute(query)
+            if cursor.pgresult is None or cursor.description is None:
+                raise EOFError("No result from postgres due to an unknown issue")
             # Preallocate dataframe as list of lists
             table = [[None] * cursor.rowcount for _ in range(cursor.pgresult.nfields)]
             # Fetch the data
@@ -109,7 +116,7 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
                         table[col_idx][row_idx] = cell
                     row_idx += 1
 
-        return {column.name: table[i] for i, column in enumerate(cursor.description)}
+            return {column.name: table[i] for i, column in enumerate(cursor.description)}
 
     def _make_psql_query(
         self,
@@ -119,7 +126,7 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         limit: int = -1,
         sample: int = -1,
         drop_duplicates: bool = False,
-    ) -> psql.SQL:
+    ) -> psql.Composed:
         """Compose a full SQL query from the information given in the arguments.
 
         Args:
@@ -167,7 +174,7 @@ class PostgresBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         return psql.SQL("")
 
     @staticmethod
-    def _make_columns_clause(columns: List[str]) -> psql.SQL:
+    def _make_columns_clause(columns: List[str] = None) -> psql.Composable:
         """Create the list of columns for a select statement in psql syntax"""
         if isinstance(columns, str):
             raise TypeError(f"'columns' must be a list of column names. Got '{columns}'")

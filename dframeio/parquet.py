@@ -1,15 +1,15 @@
 """Access parquet datasets using pyarrow.
 """
-import collections
+import collections.abc
 import random
 import re
 import shutil
 from pathlib import Path
-from typing import Dict, Iterable, List, Union
+from typing import Any, Dict, Iterable, List, Union
 
 import pandas as pd
-import pyarrow as pa
-import pyarrow.parquet as pq
+import pyarrow as pa  # type: ignore  # Type hints are missing in pyarrow
+import pyarrow.parquet as pq  # type: ignore  # Type hints are missing in pyarrow
 
 import dframeio.filter
 
@@ -196,7 +196,7 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         if full_path.exists() and full_path.is_file():
             if isinstance(dataframe, pd.DataFrame):
                 dataframe = pd.concat([self.read_to_pandas(str(full_path)), dataframe])
-            elif isinstance(dataframe, collections.Mapping):
+            elif isinstance(dataframe, collections.abc.Mapping):
                 old_data = self._read_parquet_table(
                     str(full_path), use_pandas_metadata=False
                 ).to_pydict()
@@ -252,7 +252,7 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
                 )
 
     @staticmethod
-    def _remove_matching_keys(d: collections.Mapping, regex: str):
+    def _remove_matching_keys(d: Dict[str, Any], regex: str):
         """Remove all keys matching regex from the dictionary d"""
         compiled_regex = re.compile(regex)
         keys_to_delete = [k for k in d.keys() if compiled_regex.match(k)]
@@ -271,7 +271,7 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         """
         if isinstance(dataframe, pd.DataFrame):
             return len(dataframe)
-        if isinstance(dataframe, collections.Mapping):
+        if isinstance(dataframe, collections.abc.Mapping):
             return len(next(iter(dataframe.values())))
         raise TypeError("dataframe must be a pandas.DataFrame or dict")
 
@@ -281,7 +281,7 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
     ):
         if isinstance(dataframe, pd.DataFrame):
             return pa.Table.from_pandas(dataframe.iloc[start:stop], preserve_index=True)
-        if isinstance(dataframe, collections.Mapping):
+        if isinstance(dataframe, collections.abc.Mapping):
             return pa.Table.from_pydict(
                 {colname: col[start:stop] for colname, col in dataframe.items()}
             )
@@ -306,7 +306,7 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         """Convert the dataframe to an arrow table"""
         if isinstance(dataframe, pd.DataFrame):
             return pa.Table.from_pandas(dataframe, preserve_index=True)
-        if isinstance(dataframe, collections.Mapping):
+        if isinstance(dataframe, collections.abc.Mapping):
             return pa.Table.from_pydict(dataframe)
         raise ValueError("dataframe must be a pandas.DataFrame or dict")
 
@@ -333,7 +333,7 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
         """
         kwargs = dict(columns=columns, use_threads=True, use_pandas_metadata=use_pandas_metadata)
         if row_filter:
-            kwargs["filters"] = dframeio.filter.to_pyarrow_dnf(row_filter)
+            kwargs["filters"] = dframeio.filter.to_pyarrow_dnf(row_filter)  # type: ignore
         df = pq.read_table(str(full_path), **kwargs)
         if limit >= 0:
             df = df.slice(0, min(df.num_rows, limit))

@@ -1,9 +1,16 @@
 # History
 
 ## Unreleased
+### Changed
+- The mixed-type list of backends `dframeio.backends` was removed in favor of two lists `dframeio.read_backends` `dframeio.write_backends`. This is better suitable for the use case of backend discovery.
 
+### Fixed
+- PostgresBackend.read_to_dict() had an indentation error which made the function return a variable which was already out-of-scope.
+
+## 0.3.0 (2021-11-08)
 ### Added
 - Support for PostgreSQL
+- Less strict version pinning for dependencies
 
 ### Fixed
 - Package is installable without pyarrow now
