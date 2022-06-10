@@ -571,6 +571,17 @@ pytz = ">=2017.3"
 test = ["hypothesis (>=3.58)", "pytest (>=6.0)", "pytest-xdist"]
 
 [[package]]
+name = "pandas-stubs"
+version = "1.2.0.61"
+description = "Type annotations for Pandas"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+typing-extensions = {version = ">=3.7.4.3", markers = "python_version < \"3.8\""}
+
+[[package]]
 name = "pandera"
 version = "0.9.0"
 description = "A light-weight and flexible data validation and testing tool for dataframes."
@@ -1192,7 +1203,7 @@ test = []
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7.1,<4.0"
-content-hash = "f3a1ecb874086bacbfbd468c759eeb347e8cfb83cf0d9991956e24ba7b3b6377"
+content-hash = "ca0b794681f465a89d864f86ed3a3b1f8a5ab72a8a81c1eb8cde19d655a73b55"
 
 [metadata.files]
 astroid = [
@@ -1667,6 +1678,10 @@ pandas = [
     {file = "pandas-1.3.5-cp39-cp39-win32.whl", hash = "sha256:c69406a2808ba6cf580c2255bcf260b3f214d2664a3a4197d0e640f573b46fd3"},
     {file = "pandas-1.3.5-cp39-cp39-win_amd64.whl", hash = "sha256:32e1a26d5ade11b547721a72f9bfc4bd113396947606e00d5b4a5b79b3dcb006"},
     {file = "pandas-1.3.5.tar.gz", hash = "sha256:1e4285f5de1012de20ca46b188ccf33521bff61ba5c5ebd78b4fb28e5416a9f1"},
+]
+pandas-stubs = [
+    {file = "pandas-stubs-1.2.0.61.tar.gz", hash = "sha256:3f2f59da7333b3fb2b216155f0ec26fefda7684d77bd35a096fb0bbdcb938f38"},
+    {file = "pandas_stubs-1.2.0.61-py3-none-any.whl", hash = "sha256:afb6a8d3876af775b8627d8681e9a80bb9c60b6497e75df0329bde41104a91c9"},
 ]
 pandera = [
     {file = "pandera-0.9.0-py3-none-any.whl", hash = "sha256:76d7756fa75658617aa0071c06230414452e1ddfe4bd2088c89ef7e63b89490e"},
