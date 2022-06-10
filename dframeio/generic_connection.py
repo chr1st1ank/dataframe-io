@@ -16,9 +16,13 @@ def create_reader(
             for the options.
 
     Returns:
-        A object of a backend class implementing the AbstractDataFrameReader interface.
+        An object of a backend class implementing the AbstractDataFrameReader interface.
     """
-    pass
+    if isinstance(backend_type, str):
+        for t in dframeio.read_backends:
+            if t.__name__ == backend_type:
+                return t(**backend_config)
+    return backend_type(**backend_config)
 
 
 def create_writer(
@@ -33,6 +37,10 @@ def create_writer(
             for the options.
 
     Returns:
-        A object of a backend class implementing the AbstractDataFrameWriter interface.
+        An object of a backend class implementing the AbstractDataFrameWriter interface.
     """
-    pass
+    if isinstance(backend_type, str):
+        for t in dframeio.write_backends:
+            if t.__name__ == backend_type:
+                return t(**backend_config)
+    return backend_type(**backend_config)

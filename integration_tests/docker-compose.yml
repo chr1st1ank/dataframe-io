@@ -2,7 +2,7 @@ version: '2.4'
 services:
   postgres:
     image: postgres
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: example
       POSTGRES_USER: user1

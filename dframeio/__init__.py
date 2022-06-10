@@ -4,6 +4,7 @@ import typing
 from .abstract import AbstractDataFrameReader, AbstractDataFrameWriter
 
 from dframeio.abstract import AbstractDataFrameReader, AbstractDataFrameWriter
+from dframeio.generic_connection import create_reader, create_writer
 
 __version__ = "0.2.0"
 
