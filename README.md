@@ -1,5 +1,11 @@
 # dataframe-io
 
+> [!NOTE]  
+> Note: This is an archived repository of my unmaintained package. There were times when I found such a library useful. It is archived, because I moved to using Polars and its rich I/O connectors for the typical usecases. 
+> 
+> Have a look at the [Polars User Guide](https://docs.pola.rs/user-guide/io/) in case you need a library to read and write dataframes.
+
+
 [<img src="https://img.shields.io/pypi/v/dframeio.svg" alt="Release Status">](https://pypi.python.org/pypi/dframeio)
 [<img src="https://github.com/chr1st1ank/dataframe-io/actions/workflows/test.yml/badge.svg?branch=main" alt="CI Status">](https://github.com/chr1st1ank/dataframe-io/actions)
 [![codecov](https://codecov.io/gh/chr1st1ank/dataframe-io/branch/main/graph/badge.svg?token=4oBkRHXbfa)](https://codecov.io/gh/chr1st1ank/dataframe-io)
