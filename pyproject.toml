@@ -16,6 +16,7 @@ classifiers = [
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
     'Topic :: Database'
 ]
 packages = [
@@ -26,7 +27,7 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.7.1,<4.0"
 pandas = ">=1.0.0,<2.0"
-pyarrow = { version = ">=4.0,<7.0", optional = true }
+pyarrow = { version = ">=4.0,<9.0", optional = true }
 psycopg = { version = "~3", optional = true }
 lark-parser = "^0.12.0"
 
@@ -64,10 +65,10 @@ mkdocs = { version = "^1.0.0" }
 mkdocs-autorefs = { version = "*" }
 mkdocs-include-markdown-plugin = { version = "*" }
 mkapi = { version = "*" }
-pip = { version = "^20.3.1" }
+pip = { version = "^21.1.0" }
 pre-commit = { version = "^2.12.0" }
-pyarrow = "^6.0.0"
-pytest = "^6.2.4"
+pyarrow = "^8.0.0"
+pytest = "^7.1.2"
 pytest-cov = { version = "*" }
 toml = { version = "*" }
 tox = { version = "*" }
@@ -81,7 +82,8 @@ pylint-junit = "*"
 #Jinja2 = "^3.0.1"  # This is only for pyparsing[diagrams]
 pydot = "^1.4.2"
 psycopg = "^3.0.1"
-mypy = "^0.910"
+mypy = "^0.961"
+pandas-stubs = "^1.2.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

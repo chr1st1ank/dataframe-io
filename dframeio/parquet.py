@@ -166,7 +166,6 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
                 pq.write_table(
                     self._dataframe_slice_as_arrow_table(dataframe, i, i + self._rows_per_file),
                     where=str(full_path / (full_path.name + str(i))),
-                    flavor="spark",
                     compression="snappy",
                 )
         else:
@@ -182,12 +181,11 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
                     arrow_table,
                     root_path=str(full_path),
                     partition_cols=self._partitions,
-                    flavor="spark",
                     compression="snappy",
                 )
             else:
                 pq.write_table(
-                    arrow_table, where=str(full_path), flavor="spark", compression="snappy"
+                    arrow_table, where=str(full_path), compression="snappy"
                 )
 
     def write_append(self, target: str, dataframe: Union[pd.DataFrame, Dict[str, List]]):
@@ -223,7 +221,6 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
                 pq.write_table(
                     self._dataframe_slice_as_arrow_table(dataframe, i, i + self._rows_per_file),
                     where=str(full_path / (full_path.name + str(filename_index))),
-                    flavor="spark",
                     compression="snappy",
                 )
                 filename_index += 1
@@ -240,14 +237,12 @@ class ParquetBackend(AbstractDataFrameReader, AbstractDataFrameWriter):
                     arrow_table,
                     root_path=str(full_path),
                     partition_cols=self._partitions,
-                    flavor="spark",
                     compression="snappy",
                 )
             else:
                 pq.write_table(
                     arrow_table,
                     where=str(full_path),
-                    flavor="spark",
                     compression="snappy",
                 )
 
